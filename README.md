@@ -15,13 +15,13 @@ Make sure you have the following installed on your machine:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/hilalhmdy/stockpilot-frontend.git
+   git clone https://github.com/Stock-Pilot-Git/StockPilot-Frontend.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd <your-project-directory>
+   cd StockPilot-Frontend
    ```
 
 3. Install the dependencies:
