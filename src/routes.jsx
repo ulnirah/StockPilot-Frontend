@@ -5,8 +5,16 @@ import {
   InformationCircleIcon,
   ServerStackIcon,
   RectangleStackIcon,
+  AdjustmentsHorizontalIcon,
+  InboxStackIcon,
+  CircleStackIcon,
+  Squares2X2Icon,
+  ShoppingCartIcon,
+  ArrowDownCircleIcon,
+  ArrowDownLeftIcon,
+  ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
+import { Home, Profile, DataManagement, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -18,7 +26,7 @@ export const routes = [
     layout: "dashboard",
     pages: [
       {
-        icon: <HomeIcon {...icon} />,
+        icon: <Squares2X2Icon {...icon} />,
         name: "dashboard",
         path: "/home",
         element: <Home />,
@@ -30,14 +38,14 @@ export const routes = [
         element: <Profile />,
       },
       {
-        icon: <TableCellsIcon {...icon} />,
-        name: "tables",
-        path: "/tables",
-        element: <Tables />,
+        icon: <AdjustmentsHorizontalIcon {...icon} />,
+        name: "data Management",
+        path: "/data-management",
+        element: <DataManagement />,
       },
       {
-        icon: <InformationCircleIcon {...icon} />,
-        name: "notifications",
+        icon: <ShoppingCartIcon {...icon} />,
+        name: "inventory management",
         path: "/notifications",
         element: <Notifications />,
       },
@@ -54,8 +62,8 @@ export const routes = [
         element: <SignIn />,
       },
       {
-        icon: <RectangleStackIcon {...icon} />,
-        name: "sign up",
+        icon: <ArrowLeftOnRectangleIcon {...icon} />,
+        name: "sign out",
         path: "/sign-up",
         element: <SignUp />,
       },
