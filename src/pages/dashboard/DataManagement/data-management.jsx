@@ -11,8 +11,11 @@ import {
   CubeIcon,
   ShoppingBagIcon,
 } from "@heroicons/react/24/solid";
-import TransactionsTable from "@/components/tables/tables";
 import React, { useState } from "react";
+import ProductTable from "./components/ProductTable";
+import CategoryTable from "./components/CategoryTable";
+import RetailerTable from "./components/RetailerTable";
+import SupplierTable from "./components/SupplierTable";
 
 export function DataManagement() {
 
@@ -48,14 +51,18 @@ export function DataManagement() {
               </div>
             </Tab>
           </TabsHeader>
+
         </Tabs>
       </div>
 
       <div className="mt-6 flex justify-center">
-
-        <TransactionsTable/>
-        
+        { activeTab==="product" && <ProductTable/>}
+        { activeTab==="category" && <CategoryTable/>}
+        { activeTab==="supplier" && <SupplierTable/>}
+        { activeTab==="retailer" && <RetailerTable/>}
       </div>
+
+      
 
     </div>
   );

@@ -14,7 +14,9 @@ import {
   ArrowDownLeftIcon,
   ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, DataManagement, Notifications } from "@/pages/dashboard";
+import { Home, Profile, DataManagement, InventoryManagement } from "@/pages/dashboard";
+
+
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -32,12 +34,6 @@ export const routes = [
         element: <Home />,
       },
       {
-        icon: <UserCircleIcon {...icon} />,
-        name: "profile",
-        path: "/profile",
-        element: <Profile />,
-      },
-      {
         icon: <AdjustmentsHorizontalIcon {...icon} />,
         name: "data Management",
         path: "/data-management",
@@ -46,8 +42,14 @@ export const routes = [
       {
         icon: <ShoppingCartIcon {...icon} />,
         name: "inventory management",
-        path: "/notifications",
-        element: <Notifications />,
+        path: "/inventory-management",
+        element: <InventoryManagement />,
+      },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "profile",
+        path: "/profile",
+        element: <Profile />,
       },
     ],
   },
