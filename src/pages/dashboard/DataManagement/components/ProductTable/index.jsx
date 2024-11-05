@@ -324,14 +324,6 @@ export function ProductTable() {
           <Typography className="mt-8 font-normal text-orange-600">
             *Required
           </Typography>
-          {/* <IconButton
-            size="sm"
-            variant="text"
-            className="!absolute right-3.5 top-3.5"
-            onClick={handleOpen}
-          >
-            <XMarkIcon className="h-4 w-4 stroke-2" />
-          </IconButton> */}
         </DialogHeader>
         <DialogBody className="space-y-4 pb-6">
           <div>
@@ -345,7 +337,7 @@ export function ProductTable() {
             <Input
               color="gray"
               size="lg"
-              placeholder="eg. White Shoes"
+              placeholder="input name"
               name="name"
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
@@ -367,7 +359,7 @@ export function ProductTable() {
             <Input
               color="gray"
               size="lg"
-              placeholder="eg. White Shoes"
+              placeholder="input description"
               name="name"
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
@@ -389,7 +381,7 @@ export function ProductTable() {
             <Input
               color="gray"
               size="lg"
-              placeholder="eg. White Shoes"
+              placeholder="input price"
               name="name"
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
@@ -411,7 +403,7 @@ export function ProductTable() {
             <Input
               color="gray"
               size="lg"
-              placeholder="eg. White Shoes"
+              placeholder="input stock"
               name="name"
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{

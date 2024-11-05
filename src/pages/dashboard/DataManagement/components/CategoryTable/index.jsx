@@ -87,7 +87,7 @@ export function CategoryTable() {
                 />
             </div>
           </div>
-          <Button value="product" onClick={handleOpen} className="flex items-center mr-8 gap-3 bg-blue" size="sm">
+          <Button value="product" onClick={handleOpen} className="flex items-center mr-8 gap-2 bg-blue" size="sm">
             <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Category
           </Button>
 

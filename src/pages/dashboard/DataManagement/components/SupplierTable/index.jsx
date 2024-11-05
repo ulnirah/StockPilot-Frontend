@@ -191,8 +191,6 @@ export function SupplierTable() {
         </Button>
       </CardFooter>
       </Card>
-      
-
 
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
         <DialogHeader className="relative m-0 block">
@@ -215,7 +213,7 @@ export function SupplierTable() {
             <Input
               color="gray"
               size="lg"
-              placeholder="eg. White Shoes"
+              placeholder="input supplier name"
               name="name"
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
@@ -237,7 +235,7 @@ export function SupplierTable() {
             <Input
               color="gray"
               size="lg"
-              placeholder="eg. White Shoes"
+              placeholder="input contact info"
               name="name"
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
@@ -259,7 +257,7 @@ export function SupplierTable() {
             <Input
               color="gray"
               size="lg"
-              placeholder="eg. White Shoes"
+              placeholder="input address"
               name="name"
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
