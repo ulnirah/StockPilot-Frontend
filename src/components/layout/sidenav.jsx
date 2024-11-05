@@ -13,7 +13,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavColor, sidenavType, openSidenav } = controller;
   const sidenavTypes = {
-    dark: "bg-gradient-to-br from-gray-800 to-gray-900",
+    dark: "bg-blue",
     white: "bg-white shadow-sm",
     transparent: "bg-transparent",
   };
@@ -70,15 +70,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
                 <NavLink to={`/${layout}${path}`}>
                   {({ isActive }) => (
                     <Button
-                      variant={isActive ? "gradient" : "text"}
-                      color={
-                        isActive
-                          ? sidenavColor
-                          : sidenavType === "dark"
-                          ? "white"
-                          : "blue-gray"
-                      }
-                      className="flex items-center gap-4 px-4 capitalize"
+                      className= {`${isActive ? " bg-blue text-white"  : "bg-white text-blue-gray-400" } hover:shadow-none shadow-none flex items-center gap-4 px-4 capitalize `}
                       fullWidth
                     >
                       {icon}

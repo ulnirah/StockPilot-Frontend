@@ -1,9 +1,10 @@
-import { PencilIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
 import {
   ArrowDownTrayIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
   PlusIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import {
   Card,
@@ -28,7 +29,7 @@ import {
 import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
  
-const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
+const TABLE_HEAD = ["Name", "Category",  "Action"];
  
 const TABLE_ROWS = [
   {
@@ -58,9 +59,12 @@ export function CategoryTable() {
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
+
   const [openFilter, setOpenFilter] = useState(false);
   const handleOpenFilter = () => setOpenFilter(!openFilter);
     
+  const [openDelete, setOpenDelete] = useState(false);
+  const handleOpenDelete = () => setOpenDelete(!openDelete);
   return (
 
     <>
@@ -84,14 +88,9 @@ export function CategoryTable() {
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                 />
             </div>
-            <Button value="filter" onClick={handleOpenFilter} className="flex items-center gap-3" size="sm">
-                <FunnelIcon strokeWidth={2} className="h-4 w-4" /> Filter
-            </Button>
-
           </div>
-
-          <Button value="product" onClick={handleOpen} className="flex items-center mr-6 gap-3" size="sm">
-            <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Product
+          <Button value="product" onClick={handleOpen} className="flex items-center mr-8 gap-3 bg-blue" size="sm">
+            <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Category
           </Button>
 
         </div>
@@ -152,53 +151,20 @@ export function CategoryTable() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {description}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
                         {category}
                       </Typography>
                     </td>
                     <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        Rp.{price}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                        <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                        >
-                            Rp.{stock}
-                        </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Tooltip content="View">
+                     <Tooltip content="Edit">
                         <IconButton variant="text">
-                          <PencilIcon className="h-4 w-4" />
+                            <PencilSquareIcon className="h-4 w-4" />
+                        </IconButton>
+                     </Tooltip>
+                     <Tooltip content="Delete">
+                        <IconButton variant="text" onClick={handleOpenDelete}>
+                            <TrashIcon className="h-4 w-4" color="red" />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip content="Edit">
-                        <IconButton variant="text">
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip content="Delete ">
-                        <IconButton variant="text">
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                      
                     </td>
                   </tr>
                 );
@@ -240,106 +206,15 @@ export function CategoryTable() {
       </CardFooter>
       </Card>
       
-      <Dialog size="xs" open={openFilter} handler={handleOpenFilter} className="p-4">
-        <DialogHeader className="relative m-0 block">
-        </DialogHeader>
-        <DialogBody className="space-y-4 pb-6">
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Category
-            </Typography>
-    
-            <Select
-              className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
-              placeholder="testing123"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            >
-              <Option>Clothing</Option>
-              <Option>Fashion</Option>
-              <Option>Watches</Option>
-            </Select>
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Minimum Price
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="Input minimum price"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Minimum Price
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="Input minimum price"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-
-        </DialogBody>
-        <DialogFooter className="flex justify-center">
-          <Button variant="outlined" onClick={handleOpenFilter} >
-            Cancel
-          </Button>
-          <Button className="ml-8 " onClick={handleOpenFilter}>
-            Add Product
-          </Button>
-        </DialogFooter>
-      </Dialog>
-
+      {/*new category*/}
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
-            Create New Product
+            Create New Category
           </Typography>
           <Typography className="mt-8 font-normal text-orange-600">
             *Required
           </Typography>
-          {/* <IconButton
-            size="sm"
-            variant="text"
-            className="!absolute right-3.5 top-3.5"
-            onClick={handleOpen}
-          >
-            <XMarkIcon className="h-4 w-4 stroke-2" />
-          </IconButton> */}
         </DialogHeader>
         <DialogBody className="space-y-4 pb-6">
           <div>
@@ -348,116 +223,69 @@ export function CategoryTable() {
               color="blue-gray"
               className="mb-2 text-left font-medium"
             >
-              Name
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="eg. White Shoes"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Description
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="eg. White Shoes"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Price
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="eg. White Shoes"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Stock
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="eg. White Shoes"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
               Category
             </Typography>
-            <Select
-              className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
-              placeholder="1"
+            <Input
+              color="gray"
+              size="lg"
+              placeholder="Input category name"
+              name="name"
+              className="placeholder:opacity-100 focus:!border-t-gray-900"
+              containerProps={{
+                className: "!min-w-full",
+              }}
               labelProps={{
                 className: "hidden",
               }}
-            >
-              <Option>Clothing</Option>
-              <Option>Fashion</Option>
-              <Option>Watches</Option>
-            </Select>
+            />
           </div>
-
         </DialogBody>
         <DialogFooter className="flex justify-center">
           <Button variant="outlined" onClick={handleOpen} >
             Cancel
           </Button>
           <Button className="ml-8 " onClick={handleOpen}>
-            Add Product
+            Add Category
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
+      {/* DELETE */}
+      <Dialog size="xs" open={openDelete} handler={handleOpenDelete}>
+        <DialogBody divider className="grid place-items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="h-16 w-16 text-red-500 mt-4"
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <Typography color="red" variant="h4">
+            Product Delete
+          </Typography>
+          <Typography className="text-center font-normal">
+            Are you sure to delete?
+          </Typography>
+        </DialogBody>
+        <div className="flex justify-between ">
+            <Typography className="font-normal ml-8 mt-4">
+                Name
+            </Typography>
+            <Typography className="font-normal mr-8 mt-4">
+                ABC KECAP
+            </Typography>
+        </div>
+        <DialogFooter className="flex justify-center">
+          <Button color="red" onClick={handleOpenDelete}>
+            No, Cancel
+          </Button>
+          <Button className="ml-8" variant="outlined" onClick={handleOpenDelete}>
+            Yes, Delete
           </Button>
         </DialogFooter>
       </Dialog>

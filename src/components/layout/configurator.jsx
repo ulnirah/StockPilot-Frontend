@@ -48,7 +48,7 @@ export function Configurator() {
 
   const sidenavColors = {
     white: "from-gray-100 to-gray-100 border-gray-200",
-    dark: "from-black to-black border-gray-200",
+    dark: "from-blue to-blue border-gray-200",
     green: "from-green-400 to-green-600",
     orange: "from-orange-400 to-orange-600",
     red: "from-red-400 to-red-600",
@@ -98,7 +98,7 @@ export function Configurator() {
                 className={`h-6 w-6 cursor-pointer rounded-full border bg-gradient-to-br transition-transform hover:scale-105 ${
                   sidenavColors[color]
                 } ${
-                  sidenavColor === color ? "border-black" : "border-transparent"
+                  sidenavColor === color ? "border-blue" : "border-transparent"
                 }`}
                 onClick={() => setSidenavColor(dispatch, color)}
               />

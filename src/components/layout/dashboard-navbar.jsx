@@ -156,7 +156,7 @@ export function DashboardNavbar() {
                 </div>
               </MenuItem>
               <MenuItem className="flex items-center gap-4">
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-tr from-blue-gray-800 to-blue-gray-900">
+                <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-tr from-blue to-blue">
                   <CreditCardIcon className="h-4 w-4 text-white" />
                 </div>
                 <div>

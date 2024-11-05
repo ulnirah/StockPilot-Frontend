@@ -29,35 +29,10 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import axios from "axios";
- 
+import { getDataProduct } from "@/services/products";
+import { data } from "autoprefixer";
 const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
- 
-const TABLE_ROWS = [
-  {
-    name: "Kecap",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
-  },
-  {
-    name: "Kecap",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
-  },
-  {
-    name: "Kecap",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
-  },
-];
-
  
 export function ProductTable() {
 
@@ -73,18 +48,29 @@ export function ProductTable() {
   const [openDelete, setOpenDelete] = useState(false);
   const handleOpenDelete = () => setOpenDelete(!openDelete);
 
-  const [productList, setProductList] = useState([]);
+  const [dataList, setData] = useState([]);
   
-  const baseURL = "http://127.0.0.1:3000";
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    category: '',
+    price: '',
+    stock: ''
 
-  useEffect(() =>{
-    axios.get(`${baseURL}/api/products`)
-     .then(response => setProductList(response.data))
-     .catch(error => console.error('Error get Products:', error))  
-  },[baseURL])
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  useEffect(() => {
+    getDataProduct()
+      .then(reponse => setData(reponse))
+      .catch(error => console.error("There was an error!", error));
+  }, []);
+  
 
   return (
-
     <>
       <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -106,13 +92,13 @@ export function ProductTable() {
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                 />
             </div>
-            <Button value="filter" onClick={handleOpenFilter} className="flex items-center gap-3" size="sm">
+            <Button value="filter" onClick={handleOpenFilter} className="flex items-center gap-3 bg-blue" size="sm">
                 <FunnelIcon strokeWidth={2} className="h-4 w-4" /> Filter
             </Button>
 
           </div>
 
-          <Button value="product" onClick={handleOpen} className="flex items-center mr-6 gap-3" size="sm">
+          <Button value="product" onClick={handleOpen} className="flex items-center mr-8 gap-3  bg-blue" size="sm">
             <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Product
           </Button>
 
@@ -139,92 +125,74 @@ export function ProductTable() {
             </tr>
           </thead>
           <tbody>
-            {productList.map(
-              (
-                {
-                  name,
-                  description,
-                  category,
-                  price,
-                  stock,
-                },
-                index,
-              ) => {
-                const isLast = index === TABLE_ROWS.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
- 
+            {dataList.length > 0 ? (
+                dataList.map(({ name, description, category, price, stock }, index) => {
+                const isLast = index === dataList.length - 1;
+                const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+
                 return (
-                  <tr key={name}>
+                    <tr key={name}>
                     <td className={classes}>
-                      <div className="gap-3">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-bold"
-                        >
-                          {name}
+                        <div className="gap-3">
+                        <Typography variant="small" color="blue-gray" className="font-bold">
+                            {name}
                         </Typography>
-                      </div>
+                        </div>
                     </td>
                     <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
+                        <Typography variant="small" color="blue-gray" className="font-normal">
                         {description}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {category.name}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        Rp.{price}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                        <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                        >
-                            Rp.{stock}
                         </Typography>
                     </td>
                     <td className={classes}>
-                      <Tooltip content="View" >
-                        <IconButton variant="text" onClick={handleOpenViewImage} >
-                          <EyeIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip content="Edit">
-                        <IconButton variant="text">
-                          <PencilSquareIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip content="Delete " >
-                        <IconButton variant="text" onClick={handleOpenDelete}>
-                          <TrashIcon className="h-4 w-4 " color="red" />
-                        </IconButton>
-                      </Tooltip>
-                      
+                        <Typography variant="small" color="blue-gray" className="font-normal">
+                        {category.name}
+                        </Typography>
                     </td>
-                  </tr>
+                    <td className={classes}>
+                        <Typography variant="small" color="blue-gray" className="font-normal">
+                        Rp.{price}
+                        </Typography>
+                    </td>
+                    <td className={classes}>
+                        <Typography variant="small" color="blue-gray" className="font-normal">
+                        Rp.{stock}
+                        </Typography>
+                    </td>
+                    <td className={classes}>
+                        <Tooltip content="View">
+                        <IconButton variant="text" onClick={handleOpenViewImage}>
+                            <EyeIcon className="h-4 w-4" />
+                        </IconButton>
+                        </Tooltip>
+                        <Tooltip content="Edit">
+                        <IconButton variant="text">
+                            <PencilSquareIcon className="h-4 w-4" />
+                        </IconButton>
+                        </Tooltip>
+                        <Tooltip content="Delete">
+                        <IconButton variant="text" onClick={handleOpenDelete}>
+                            <TrashIcon className="h-4 w-4" color="red" />
+                        </IconButton>
+                        </Tooltip>
+                    </td>
+                    </tr>
                 );
-              },
+                })
+            ) : (
+                 <tr>
+                 <td colSpan="6" className="p-4 text-center text-blue-gray-500">
+                     <Typography variant="h6" color="blue-gray">
+                         No Data Here
+                     </Typography>
+                     <Typography
+                     variant="small"
+                     color="blue-gray"
+                     className="font-normal leading-none opacity-70 mt-4">
+                         Create your first data
+                     </Typography>
+                 </td>
+                 </tr>
             )}
           </tbody>
         </table>
@@ -486,7 +454,6 @@ export function ProductTable() {
         </DialogFooter>
       </Dialog>
       
-
       {/* VIEW IMAGE */}
       <Dialog size="sm" open={openViewImage} handler={handleOpenViewImage} className="p-4">
         <DialogHeader className="relative m-0 block">

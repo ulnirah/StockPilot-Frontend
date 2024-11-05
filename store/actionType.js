@@ -1,1 +1,0 @@
-export const GET_PRODUCTS = "SET_PRODUCTS";
