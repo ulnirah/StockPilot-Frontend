@@ -1,10 +1,11 @@
-import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
+
 import {
   ArrowDownTrayIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   TrashIcon,
+  PencilSquareIcon
 } from "@heroicons/react/24/outline";
 import {
   Card,
@@ -29,7 +30,7 @@ import {
 import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
  
-const TABLE_HEAD = ["Name", "Category",  "Action"];
+const TABLE_HEAD = ["Category",  "Action"];
  
 const TABLE_ROWS = [
   {
@@ -60,9 +61,6 @@ export function CategoryTable() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
 
-  const [openFilter, setOpenFilter] = useState(false);
-  const handleOpenFilter = () => setOpenFilter(!openFilter);
-    
   const [openDelete, setOpenDelete] = useState(false);
   const handleOpenDelete = () => setOpenDelete(!openDelete);
   return (
@@ -134,17 +132,6 @@ export function CategoryTable() {
  
                 return (
                   <tr key={name}>
-                    <td className={classes}>
-                      <div className="gap-3">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-bold"
-                        >
-                          {name}
-                        </Typography>
-                      </div>
-                    </td>
                     <td className={classes}>
                       <Typography
                         variant="small"
@@ -266,7 +253,7 @@ export function CategoryTable() {
             />
           </svg>
           <Typography color="red" variant="h4">
-            Product Delete
+            Category Delete
           </Typography>
           <Typography className="text-center font-normal">
             Are you sure to delete?
