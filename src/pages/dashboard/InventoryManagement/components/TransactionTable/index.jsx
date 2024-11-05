@@ -1,6 +1,7 @@
 import { PencilIcon } from "@heroicons/react/24/solid";
 import {
   ArrowDownTrayIcon,
+  DocumentArrowUpIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
   PlusIcon,
@@ -19,29 +20,35 @@ import {
   Input,
 } from "@material-tailwind/react";
  
-const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
+const TABLE_HEAD = ["Order Date", "Transaction Date", "Product", "Quantity", "Stock", "Transaction Type", "Supplier/Retailer"];
  
 const TABLE_ROWS = [
   {
-    name: "Spotify",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
+    orderDate: "10-09-2023",
+    transactionDate: "10-09-2023",
+    product: "Ketchup",
+    quantity: "10",
+    stock: "1",
+    transactionType: "Inbound",
+    transactionBy: "Borma"
   },
   {
-    name: "Amazon",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
+    orderDate: "10-09-2023",
+    transactionDate: "10-09-2023",
+    product: "Ketchup",
+    quantity: "10",
+    stock: "1",
+    transactionType: "Inbound",
+    transactionBy: "Borma"
   },
   {
-    name: "Pinterest",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
+    orderDate: "10-09-2023",
+    transactionDate: "10-09-2023",
+    product: "Ketchup",
+    quantity: "10",
+    stock: "1",
+    transactionType: "Inbound",
+    transactionBy: "Borma"
   },
 ];
  
@@ -67,18 +74,18 @@ export function TransactionTable() {
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                 />
             </div>
-            <Button value="filter" className="flex items-center gap-3" size="sm">
+            <Button value="filter" className="flex items-center gap-3 bg-blue" size="sm">
                 <FunnelIcon strokeWidth={2} className="h-4 w-4" /> Filter
             </Button>
           </div>
 
-          <Button value="download" className="flex items-center mr-6 gap-3" size="sm">
-            <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Product
+          <Button value="download" className="flex items-center mr-8 gap-3 bg-blue" size="sm">
+            <DocumentArrowUpIcon strokeWidth={2} className="h-4 w-4" /> Export
           </Button>
         </div>
       </div>
       <CardBody className="overflow-scroll px-0">
-        <table className="w-full min-w-max table-auto text-left">
+        <table className="w-full min-w-max table-auto text-center">
           <thead>
             <tr>
               {TABLE_HEAD.map((head) => (
@@ -101,11 +108,13 @@ export function TransactionTable() {
             {TABLE_ROWS.map(
               (
                 {
-                  name,
-                  description,
-                  category,
-                  price,
+                  orderDate,
+                  transactionDate,
+                  product,
+                  quantity,
                   stock,
+                  transactionType,
+                  transactionBy,
                 },
                 index,
               ) => {
@@ -115,15 +124,15 @@ export function TransactionTable() {
                   : "p-4 border-b border-blue-gray-50";
  
                 return (
-                  <tr key={name}>
+                  <tr key={orderDate}>
                     <td className={classes}>
-                      <div className="flex items-center gap-3">
+                      <div className="gap-3">
                         <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-bold"
+                          className="font-normal"
                         >
-                          {name}
+                          {orderDate}
                         </Typography>
                       </div>
                     </td>
@@ -133,7 +142,7 @@ export function TransactionTable() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {description}
+                        {transactionDate}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -142,7 +151,7 @@ export function TransactionTable() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {category}
+                        {product}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -151,25 +160,35 @@ export function TransactionTable() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        Rp.{price}
+                        {quantity}
                       </Typography>
                     </td>
                     <td className={classes}>
-                        <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                        >
-                            Rp.{stock}
-                        </Typography>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {stock}
+                      </Typography>
                     </td>
                     <td className={classes}>
-                      <Tooltip content="Edit User">
-                        <IconButton variant="text">
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                      
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {transactionType}
+                      </Typography>
+                    </td>
+                    <td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {transactionBy}
+                      </Typography>
                     </td>
                   </tr>
                 );
