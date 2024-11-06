@@ -16,7 +16,6 @@ import {
 } from "@heroicons/react/24/solid";
 import { Home, Profile, DataManagement, InventoryManagement } from "@/pages/dashboard";
 
-
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -58,16 +57,10 @@ export const routes = [
     layout: "auth",
     pages: [
       {
-        icon: <ServerStackIcon {...icon} />,
+        icon: <ArrowLeftOnRectangleIcon  {...icon} />,
         name: "sign in",
         path: "/sign-in",
         element: <SignIn />,
-      },
-      {
-        icon: <ArrowLeftOnRectangleIcon {...icon} />,
-        name: "sign out",
-        path: "/sign-up",
-        element: <SignUp />,
       },
     ],
   },

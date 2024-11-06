@@ -139,8 +139,8 @@ export function ProductTable() {
                         </Typography>
                         </div>
                     </td>
-                    <td className={classes}>
-                        <Typography variant="small" color="blue-gray" className="font-normal">
+                    <td className={`${classes} max-w-xs`}>
+                        <Typography variant="small" color="blue-gray" className="font-normal break-words whitespace-normal overflow-wrap break-word">
                         {description}
                         </Typography>
                     </td>
@@ -151,12 +151,12 @@ export function ProductTable() {
                     </td>
                     <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                        Rp.{price}
+                        {price}
                         </Typography>
                     </td>
                     <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                        Rp.{stock}
+                        {stock}
                         </Typography>
                     </td>
                     <td className={classes}>

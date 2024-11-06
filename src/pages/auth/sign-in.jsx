@@ -48,8 +48,8 @@ export function SignIn() {
               }}
             />
           </div>
-          <Button className="mt-6 bg-blue" fullWidth>
-            Sign In
+          <Button href="" className="mt-6 bg-blue" fullWidth>
+            <Link to="/dashboard/home" >Sign in</Link>
           </Button>
 
           <div className="flex items-center justify-between gap-2 mt-2">

@@ -26,19 +26,19 @@ import SupplyTable from "./components/SupplyTable";
         <div className="mt-12 flex justify-center " >
           <Tabs value={activeTab} className="max-w-[40rem]">
             <TabsHeader >
-              <Tab value="transaction" onClick={() => setActiveTab("transaction")}>
+              <Tab value="transaction" onClick={() => setActiveTab("transaction")}  className={activeTab === "transaction" ? " text-blue" : ""} >
                 <div className="flex items-center mr-2 gap-2">
                   <InboxStackIcon className="-mt-1 mr-2 ml-2 inline-block h-5 w-5" />
                   Transaction
                 </div>
               </Tab>
-              <Tab value="delivery" onClick={() => setActiveTab("delivery")}>
+              <Tab value="delivery" onClick={() => setActiveTab("delivery")}  className={activeTab === "delivery" ? " text-blue" : ""}>
                 <div className="flex items-center mr-2 gap-2">
                   <Square3Stack3DIcon className="-mt-1 mr-2 ml-2inline-block h-5 w-5" />
                   Delivery
                 </div>
               </Tab>
-              <Tab value="supply" onClick={() => setActiveTab("supply")}>
+              <Tab value="supply" onClick={() => setActiveTab("supply")}  className={activeTab === "supply" ? " text-blue" : ""}>
                 <div className="flex items-center mr-2 gap-2">
                   <CubeIcon className="-mt-1 mr-2 ml-2 inline-block h-5 w-5" />
                   Supply
