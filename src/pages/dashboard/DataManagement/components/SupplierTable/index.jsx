@@ -1,4 +1,5 @@
 
+import { getDataSupplier } from "@/services/supplier";
 import {
   MagnifyingGlassIcon,
   PencilSquareIcon,
@@ -25,7 +26,8 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@material-tailwind/react";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
  
 const TABLE_HEAD = ["Name", "Contact", "Address", "Action"];
  
@@ -45,6 +47,14 @@ export function SupplierTable() {
   const [openDelete, setOpenDelete] = useState(false);
   const handleOpenDelete = () => setOpenDelete(!openDelete);
     
+  const [dataList, setData] = useState([]);
+  
+  useEffect(() => {
+    getDataSupplier()
+      .then(reponse => setData(reponse))
+      .catch(error => console.error("There was an error!", error));
+  }, []);
+
   return (
     <>
       <Card className="h-full w-full">
@@ -95,16 +105,16 @@ export function SupplierTable() {
             </tr>
           </thead>
           <tbody>
-            {TABLE_ROWS.map(
+            {dataList.map(
               (
                 {
                   name,
                   contact,
-                  address,
+                  orderCount,
                 },
                 index,
               ) => {
-                const isLast = index === TABLE_ROWS.length - 1;
+                const isLast = index === dataList.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
@@ -137,7 +147,7 @@ export function SupplierTable() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {address}
+                        {orderCount}
                       </Typography>
                     </td>
                     <td className={classes}>

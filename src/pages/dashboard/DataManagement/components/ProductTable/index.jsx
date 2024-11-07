@@ -98,7 +98,6 @@ function ProductTable() {
       .catch(error => console.error("There was an error!", error));
   }, []);
   
-  console.log('formdata',formData)
 
   return (
     <>

@@ -27,8 +27,10 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@material-tailwind/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { getDataCategory } from "@/services/category";
  
 const TABLE_HEAD = ["Category",  "Action"];
  
@@ -63,6 +65,17 @@ export function CategoryTable() {
 
   const [openDelete, setOpenDelete] = useState(false);
   const handleOpenDelete = () => setOpenDelete(!openDelete);
+
+  const [dataList, setData] = useState([]);
+  
+  useEffect(() => {
+    getDataCategory()
+      .then(reponse => setData(reponse))
+      .catch(error => console.error("There was an error!", error));
+  }, []);
+
+  console.log("data category",dataList)
+
   return (
 
     <>
@@ -114,49 +127,52 @@ export function CategoryTable() {
             </tr>
           </thead>
           <tbody>
-            {TABLE_ROWS.map(
-              (
-                {
-                  name,
-                  description,
-                  category,
-                  price,
-                  stock,
-                },
-                index,
-              ) => {
-                const isLast = index === TABLE_ROWS.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
- 
-                return (
-                  <tr key={name}>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {category}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                     <Tooltip content="Edit">
-                        <IconButton variant="text">
-                            <PencilSquareIcon className="h-4 w-4" />
-                        </IconButton>
-                     </Tooltip>
-                     <Tooltip content="Delete">
-                        <IconButton variant="text" onClick={handleOpenDelete}>
-                            <TrashIcon className="h-4 w-4" color="red" />
-                        </IconButton>
+          {dataList.length > 0 ? (
+              dataList.map(({ name},index,) => {
+                  const isLast = index === dataList.length - 1;
+                  const classes = isLast? "p-4" : "p-4 border-b border-blue-gray-50";
+  
+                  return (
+                    <tr key={name}>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {name}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                      <Tooltip content="Edit">
+                          <IconButton variant="text">
+                              <PencilSquareIcon className="h-4 w-4" />
+                          </IconButton>
                       </Tooltip>
-                    </td>
-                  </tr>
-                );
-              },
-            )}
+                      <Tooltip content="Delete">
+                          <IconButton variant="text" onClick={handleOpenDelete}>
+                              <TrashIcon className="h-4 w-4" color="red" />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    </tr>
+                  );
+              })
+            ) : (
+              <tr>
+              <td colSpan="6" className="p-4 text-center text-blue-gray-500">
+                  <Typography variant="h6" color="blue-gray">
+                      No Data Here
+                  </Typography>
+                  <Typography
+                  variant="small"
+                  color="blue-gray"
+                  className="font-normal leading-none opacity-70 mt-4">
+                      Create your first data
+                  </Typography>
+              </td>
+              </tr>
+           )}
           </tbody>
         </table>
       </CardBody>

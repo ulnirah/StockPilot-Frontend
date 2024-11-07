@@ -1,8 +1,8 @@
 import { api } from "../axios";
 
-export const getDataCategory = async () => {
+export const getDataSupplier = async () => {
     try {
-      const response = await api.get('/api/categories');
+      const response = await api.get('/api/suppliers');
       return response.data;
     } catch (error) {
       console.error("Error fetching data:", error);
