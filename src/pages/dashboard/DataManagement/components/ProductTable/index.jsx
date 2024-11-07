@@ -35,6 +35,8 @@ import { data } from "autoprefixer";
 import ViewImageProduct from "./ViewImageProduct";
 const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
  
+const ITEMS_PER_PAGE = 4; // Maksimal 5 item per halaman
+
 function ProductTable() {
 
   const [open, setOpen] = useState(false);
@@ -60,6 +62,26 @@ function ProductTable() {
 
   const [dataList, setData] = useState([]);
   
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(dataList.length / ITEMS_PER_PAGE);
+
+  const currentData = dataList.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -154,9 +176,9 @@ function ProductTable() {
             </tr>
           </thead>
           <tbody>
-            {dataList.length > 0 ? (
-                dataList.map(({ name, description, category, price, stock, image_url }, index) => {
-                const isLast = index === dataList.length - 1;
+            {currentData.length > 0 ? (
+                currentData.map(({ name, description, category, price, stock, image_url }, index) => {
+                const isLast = index === currentData.length - 1;
                 const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
                 return (
@@ -227,33 +249,22 @@ function ProductTable() {
         </table>
       </CardBody>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-        <Button variant="outlined" size="sm">
+        <Button variant="outlined" size="sm" onClick={handlePrevious} disabled={currentPage === 1}>
           Previous
         </Button>
         <div className="flex items-center gap-2">
-          <IconButton variant="outlined" size="sm">
-            1
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            2
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            3
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            ...
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            8
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            9
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            10
-          </IconButton>
+        {Array.from({ length: totalPages }, (_, index) => (
+            <IconButton
+              key={index}
+              variant={currentPage === index + 1 ? "outlined" : "text"}
+              size="sm"
+              onClick={() => setCurrentPage(index + 1)}
+            >
+              {index + 1}
+            </IconButton>
+          ))}
         </div>
-        <Button variant="outlined" size="sm">
+        <Button variant="outlined" size="sm"onClick={handleNext} disabled={currentPage === totalPages}>
           Next
         </Button>
       </CardFooter>
