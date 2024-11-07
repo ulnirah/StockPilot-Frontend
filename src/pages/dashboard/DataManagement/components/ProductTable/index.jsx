@@ -30,11 +30,12 @@ import {
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { getDataProduct } from "@/services/products";
+import { getDataProduct, postDataProduct } from "@/services/products";
 import { data } from "autoprefixer";
+import ViewImageProduct from "./ViewImageProduct";
 const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
  
-export function ProductTable() {
+function ProductTable() {
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
@@ -42,9 +43,18 @@ export function ProductTable() {
   const [openFilter, setOpenFilter] = useState(false);
   const handleOpenFilter = () => setOpenFilter(!openFilter);
 
-  const [openViewImage, setOpenViewImage] = useState(false);
-  const handleOpenViewImage = () => setOpenViewImage(!openViewImage);
+  const [imageURL, setImageURL] = useState('');
 
+  const [openViewImage, setOpenViewImage] = useState(false);
+  const handleOpenViewImage = (newImageURL) => {
+    setOpenViewImage(true);
+    setImageURL(newImageURL);
+  }
+
+  const handleCloseViewImage = () => {
+    setOpenViewImage(false)
+  }
+  
   const [openDelete, setOpenDelete] = useState(false);
   const handleOpenDelete = () => setOpenDelete(!openDelete);
 
@@ -53,14 +63,33 @@ export function ProductTable() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    category: '',
     price: '',
-    stock: ''
-
+    stock: '',
+    category: '',
+    image_url: '',
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await postDataProduct(formData);
+      console.log('Data posted successfully:', response);
+      // Tambahkan aksi setelah berhasil mengirim data, seperti mengupdate state atau mengarahkan ke halaman lain
+    } catch (error) {
+      console.error('Failed to post data:', error);
+    }
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0]; // Mengambil file pertama yang diunggah
+    if (file) {
+      console.log("File uploaded:", file);
+      // Anda bisa menambahkan logika untuk mengunggah file ke server
+    }
   };
 
   useEffect(() => {
@@ -69,6 +98,7 @@ export function ProductTable() {
       .catch(error => console.error("There was an error!", error));
   }, []);
   
+  console.log('formdata',formData)
 
   return (
     <>
@@ -126,7 +156,7 @@ export function ProductTable() {
           </thead>
           <tbody>
             {dataList.length > 0 ? (
-                dataList.map(({ name, description, category, price, stock }, index) => {
+                dataList.map(({ name, description, category, price, stock, image_url }, index) => {
                 const isLast = index === dataList.length - 1;
                 const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
@@ -161,7 +191,7 @@ export function ProductTable() {
                     </td>
                     <td className={classes}>
                         <Tooltip content="View">
-                        <IconButton variant="text" onClick={handleOpenViewImage}>
+                        <IconButton variant="text" onClick={() => handleOpenViewImage(image_url)}>
                             <EyeIcon className="h-4 w-4" />
                         </IconButton>
                         </Tooltip>
@@ -317,6 +347,7 @@ export function ProductTable() {
 
       {/* PRODUCT */ }
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
+      <form onSubmit={() => console.log('enter') }>
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
             Create New Product
@@ -326,128 +357,164 @@ export function ProductTable() {
           </Typography>
         </DialogHeader>
         <DialogBody className="space-y-4 pb-6">
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Name
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="input name"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Description
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="input description"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Price
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="input price"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Stock
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="input stock"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Category
-            </Typography>
-            <Select
-              className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
-              placeholder="1"
-              labelProps={{
-                className: "hidden",
-              }}
-            >
-              <Option>Clothing</Option>
-              <Option>Fashion</Option>
-              <Option>Watches</Option>
-            </Select>
-          </div>
-
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Name
+              </Typography>
+              <Input
+                color="gray"
+                size="lg"
+                onChange={handleChange}
+                placeholder="input name"
+                name="name"
+                className="placeholder:opacity-100 focus:!border-t-gray-900"
+                containerProps={{
+                  className: "!min-w-full",
+                }}
+                labelProps={{
+                  className: "hidden",
+                }}
+              />
+            </div>
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Description
+              </Typography>
+              <Input
+                color="gray"
+                size="lg"
+                onChange={handleChange}
+                placeholder="input description"
+                name="description"
+                className="placeholder:opacity-100 focus:!border-t-gray-900"
+                containerProps={{
+                  className: "!min-w-full",
+                }}
+                labelProps={{
+                  className: "hidden",
+                }}
+              />
+            </div>
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Price
+              </Typography>
+              <Input
+                color="gray"
+                size="lg"
+                onChange={handleChange}
+                placeholder="input price"
+                name="price"
+                className="placeholder:opacity-100 focus:!border-t-gray-900"
+                containerProps={{
+                  className: "!min-w-full",
+                }}
+                labelProps={{
+                  className: "hidden",
+                }}
+              />
+            </div>
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Stock
+              </Typography>
+              <Input
+                color="gray"
+                size="lg"
+                onChange={handleChange}
+                placeholder="input stock"
+                name="stock"
+                className="placeholder:opacity-100 focus:!border-t-gray-900"
+                containerProps={{
+                  className: "!min-w-full",
+                }}
+                labelProps={{
+                  className: "hidden",
+                }}
+              />
+            </div>
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Category
+              </Typography>
+              <Select
+                className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
+                placeholder="1"
+                onChange={handleChange}
+                name="category"
+                labelProps={{
+                  className: "hidden",
+                }}
+              >
+                <Option value="clothing">Clothing</Option>
+                <Option>Fashion</Option>
+                <Option>Watches</Option>
+              </Select>
+            </div>
+            <div>
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="mb-2 text-left font-medium"
+              >
+                Upload Picture
+              </Typography>
+              <Input
+                type="file"
+                accept="image/*" // Membatasi hanya file gambar yang bisa diunggah
+                color="gray"
+                size="lg"
+                onChange={handleFileUpload} // Fungsi untuk menangani file yang diunggah
+                placeholder="Upload picture"
+                name="picture"
+                className="placeholder:opacity-100 focus:!border-t-gray-900"
+                containerProps={{
+                  className: "!min-w-full",
+                }}
+                labelProps={{
+                  className: "hidden",
+                }}
+                icon={<i className="fas fa-upload"/>}
+              />
+            </div>
         </DialogBody>
         <DialogFooter className="flex justify-center">
           <Button variant="outlined" onClick={handleOpen} >
             Cancel
           </Button>
-          <Button className="ml-8 " onClick={handleOpen}>
+          <Button className="ml-8 " onClick={handleSubmit}>
             Add Product
           </Button>
         </DialogFooter>
+        </form>
       </Dialog>
+
+
       
       {/* VIEW IMAGE */}
-      <Dialog size="sm" open={openViewImage} handler={handleOpenViewImage} className="p-4">
+      <ViewImageProduct openViewImage={openViewImage} imageURL={imageURL} handleClose={handleCloseViewImage}/>
+
+      {/* <Dialog size="sm" open={openViewImage} handler={handleOpenViewImage} className="p-4">
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
             Product Image
@@ -465,7 +532,7 @@ export function ProductTable() {
             Close
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
       
       {/* DELETE */}
       <Dialog size="xs" open={openDelete} handler={handleOpenDelete}>

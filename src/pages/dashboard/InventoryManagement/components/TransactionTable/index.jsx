@@ -245,8 +245,8 @@ export function TransactionTable() {
         </CardFooter>
       </Card>
 
-            {/* FILTER */}
-            <Dialog size="xs" open={openFilter} handler={handleOpenFilter} className="p-4">
+      {/* FILTER */}
+      <Dialog size="xs" open={openFilter} handler={handleOpenFilter} className="p-4">
         <DialogHeader className="relative m-0 block">
         </DialogHeader>
         <DialogBody className="space-y-4 pb-6">

@@ -1,8 +1,9 @@
 import axios from "axios";
+import.meta.env.BACKEND_URL
 
-// const baseURL = process.env.STOCKPILOT_URL
+const backendURL = import.meta.env.BACKEND_URL
 
 export  const api = axios.create({
-  baseURL: 'http://127.0.0.1:3000',
+  baseURL: backendURL,
 });
 
