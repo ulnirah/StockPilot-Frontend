@@ -20,3 +20,17 @@ export const getDataProduct = async () => {
     }
   };
 
+  export const deleteDataProduct = async (id) => {
+    try {
+      const response = await api.delete(`/api/products/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting data:", error);
+      throw error;
+    }
+  };
+
+
+
+
+  

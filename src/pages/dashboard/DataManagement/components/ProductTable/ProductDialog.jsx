@@ -22,11 +22,15 @@ import { useState, useEffect } from "react";
 import { getDataProduct, postDataProduct } from "@/services/products";
 
 import { getDataCategory } from "@/services/category";
+import { AlertProduct } from "./AlertProduct";
 
 function ProductDialog({open, handleOpen }){
 
   const [categoryList, setCategoryList] = useState([]);
+  const [message, setMessage] = useState('');
   
+  const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -36,20 +40,28 @@ function ProductDialog({open, handleOpen }){
     description: '',
     price: '',
     stock: '',
-    category: '',
+    categoryId: '',
     image_url: '',
   });
 
   const handleSelectChange = (val) => {
-    setFormData({ ...formData, category: val });
+    setFormData({ ...formData, categoryId: val });
   }
 
   const handleSubmit = async () =>{
     try {
       const response = await postDataProduct(formData);
       console.log('Data posted successfully:', response);
+
+      setShowAlert(true);
+      setMessage("Berhasil menghapus Product");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleOpen();
       // Tambahkan aksi setelah berhasil mengirim data, seperti mengupdate state atau mengarahkan ke halaman lain
     } catch (error) {
+      setMessage("Gagal menghapus Product");
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
       console.error('Failed to post data:', error);
     }
   }
@@ -61,6 +73,10 @@ function ProductDialog({open, handleOpen }){
   }, []);
 
   return(
+    <>
+      
+      <AlertProduct show={showAlert} InputText={message} />
+
       <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
       <form onSubmit={() => console.log('enter') }>
         <DialogHeader className="relative m-0 block">
@@ -176,7 +192,7 @@ function ProductDialog({open, handleOpen }){
                 className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
                 placeholder="1"
                 onChange={handleSelectChange}
-                value= {formData.category}
+                value= {formData.categoryId}
                 name="category"
                 labelProps={{
                   className: "hidden",
@@ -211,32 +227,6 @@ function ProductDialog({open, handleOpen }){
                 }}
               />
             </div>
-            {/* <div>
-              <Typography
-                variant="small"
-                color="blue-gray"
-                className="mb-2 text-left font-medium"
-              >
-                Upload Picture
-              </Typography>
-              <Input
-                type="file"
-                accept="image/*" // Membatasi hanya file gambar yang bisa diunggah
-                color="gray"
-                size="lg"
-                onChange={handleFileUpload} // Fungsi untuk menangani file yang diunggah
-                placeholder="Upload picture"
-                name="picture"
-                className="placeholder:opacity-100 focus:!border-t-gray-900"
-                containerProps={{
-                  className: "!min-w-full",
-                }}
-                labelProps={{
-                  className: "hidden",
-                }}
-                icon={<i className="fas fa-upload"/>}
-              />
-            </div> */}
         </DialogBody>
         <DialogFooter className="flex justify-center">
           <Button variant="outlined" onClick={handleOpen} >
@@ -249,7 +239,7 @@ function ProductDialog({open, handleOpen }){
         </form>
       </Dialog>
   
-  
+      </>
     )
 }
 

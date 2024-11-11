@@ -34,6 +34,7 @@ import { getDataProduct, postDataProduct } from "@/services/products";
 import { data } from "autoprefixer";
 import ViewImageProduct from "./ViewImageProduct";
 import ProductDialog from "./ProductDialog";
+import DeleteProductDialog from "./DeleteProductDialog";
 const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
  
 const ITEMS_PER_PAGE = 5
@@ -57,10 +58,20 @@ function ProductTable() {
     setOpenViewImage(false)
   }
   
-  const [openDelete, setOpenDelete] = useState(false);
-  const handleOpenDelete = () => setOpenDelete(!openDelete);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const handleOpenDeleteDialog = (product) => {
+    setOpenDeleteDialog(true);
+    setSelectedProduct(product);
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  }
 
   const [dataList, setData] = useState([]);
+
+  const [selectedProduct, setSelectedProduct] = useState();
   
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(dataList.length / ITEMS_PER_PAGE);
@@ -94,14 +105,6 @@ function ProductTable() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     console.log("handle change", e);
-  };
-
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0]; // Mengambil file pertama yang diunggah
-    if (file) {
-      console.log("File uploaded:", file);
-      // Anda bisa menambahkan logika untuk mengunggah file ke server
-    }
   };
 
   useEffect(() => {
@@ -167,42 +170,42 @@ function ProductTable() {
           </thead>
           <tbody>
             {currentData.length > 0 ? (
-                currentData.map(({ name, description, category, price, stock, image_url }, index) => {
+                currentData.map((product, index) => {
                 const isLast = index === currentData.length - 1;
                 const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
                 return (
-                    <tr key={name}>
+                    <tr key={product.name}>
                     <td className={classes}>
                         <div className="gap-3">
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                            {name}
+                            {product.name}
                         </Typography>
                         </div>
                     </td>
                     <td className={`${classes} max-w-xs`}>
                         <Typography variant="small" color="blue-gray" className="font-normal break-words whitespace-normal overflow-wrap break-word">
-                        {description}
+                        {product.description}
                         </Typography>
                     </td>
                     <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                        {category.name}
+                        {product.category.name}
                         </Typography>
                     </td>
                     <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                        {price}
+                        {product.price}
                         </Typography>
                     </td>
                     <td className={classes}>
                         <Typography variant="small" color="blue-gray" className="font-normal">
-                        {stock}
+                        {product.stock}
                         </Typography>
                     </td>
                     <td className={classes}>
                         <Tooltip content="View">
-                        <IconButton variant="text" onClick={() => handleOpenViewImage(image_url)}>
+                        <IconButton variant="text" onClick={() => handleOpenViewImage(product.image_url)}>
                             <EyeIcon className="h-4 w-4" />
                         </IconButton>
                         </Tooltip>
@@ -212,7 +215,7 @@ function ProductTable() {
                         </IconButton>
                         </Tooltip>
                         <Tooltip content="Delete">
-                        <IconButton variant="text" onClick={handleOpenDelete}>
+                        <IconButton variant="text" onClick={() => handleOpenDeleteDialog(product)} >
                             <TrashIcon className="h-4 w-4" color="red" />
                         </IconButton>
                         </Tooltip>
@@ -353,44 +356,7 @@ function ProductTable() {
 
       
       {/* DELETE */}
-      <Dialog size="xs" open={openDelete} handler={handleOpenDelete}>
-        <DialogBody divider className="grid place-items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-16 w-16 text-red-500 mt-4"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <Typography color="red" variant="h4">
-            Product Delete
-          </Typography>
-          <Typography className="text-center font-normal">
-            Are you sure to delete?
-          </Typography>
-        </DialogBody>
-        <div className="flex justify-between ">
-            <Typography className="font-normal ml-8 mt-4">
-                Name
-            </Typography>
-            <Typography className="font-normal mr-8 mt-4">
-                ABC KECAP
-            </Typography>
-        </div>
-        <DialogFooter className="flex justify-center">
-          <Button color="red" onClick={handleOpenDelete}>
-            No, Cancel
-          </Button>
-          <Button className="ml-8" variant="outlined" onClick={handleOpenDelete}>
-            Yes, Delete
-          </Button>
-        </DialogFooter>
-      </Dialog>
+      <DeleteProductDialog product={selectedProduct} open={openDeleteDialog} handleClose={handleCloseDeleteDialog}/>
 
     </>
   );
