@@ -126,7 +126,7 @@ export function SupplierTable() {
                         <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-bold"
+                          className="font-normal"
                         >
                           {name}
                         </Typography>
