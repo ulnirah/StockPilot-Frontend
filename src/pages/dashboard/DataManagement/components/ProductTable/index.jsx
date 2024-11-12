@@ -35,13 +35,20 @@ import { data } from "autoprefixer";
 import ViewImageProduct from "./ViewImageProduct";
 import ProductDialog from "./ProductDialog";
 import DeleteProductDialog from "./DeleteProductDialog";
+import EditProductDialog from "./EditProductDialog";
+import { AlertProduct } from "./AlertProduct";
+
 const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
  
 const ITEMS_PER_PAGE = 5
+
 function ProductTable() {
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(!open);
+  // GET DATA TABLE
+
+  const [message, setMessage] = useState('');
+  
+  const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
 
   const [openFilter, setOpenFilter] = useState(false);
   const handleOpenFilter = () => setOpenFilter(!openFilter);
@@ -49,6 +56,7 @@ function ProductTable() {
   const [imageURL, setImageURL] = useState('');
 
   const [openViewImage, setOpenViewImage] = useState(false);
+  
   const handleOpenViewImage = (newImageURL) => {
     setOpenViewImage(true);
     setImageURL(newImageURL);
@@ -56,17 +64,6 @@ function ProductTable() {
 
   const handleCloseViewImage = () => {
     setOpenViewImage(false)
-  }
-  
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-  const handleOpenDeleteDialog = (product) => {
-    setOpenDeleteDialog(true);
-    setSelectedProduct(product);
-  }
-
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
   }
 
   const [dataList, setData] = useState([]);
@@ -93,29 +90,73 @@ function ProductTable() {
     }
   };
 
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    stock: '',
-    category: '',
-    image_url: '',
-  });
+  const handleInitialData= () => {
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log("handle change", e);
-  };
+    getDataProduct()
+    .then(reponse => setData(reponse))
+    .catch(error => console.error("There was an error!", error));
+
+  }
 
   useEffect(() => {
-    getDataProduct()
-      .then(reponse => setData(reponse))
-      .catch(error => console.error("There was an error!", error));
+    handleInitialData()
   }, []);
+
+  // ADD Product
+  const [openProductDialog, setOpenProductDialog] = useState(false);
+  const handleOpenProductDialog = () => setOpenProductDialog(true);
+
+  const handleCloseProductDialog = () => setOpenProductDialog(false);
+
+  const handleAdd = async (formData) =>{
+    try {
+      const response = await postDataProduct(formData);
+      console.log('Data posted successfully:', response);
+
+      setShowAlert(true);
+      setMessage("Berhasil menambahkan Product");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseProductDialog();
+      handleInitialData();
+      // Tambahkan aksi setelah berhasil mengirim data, seperti mengupdate state atau mengarahkan ke halaman lain
+    } catch (error) {
+      setMessage("Gagal menambahkan Product");
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+      console.error('Failed to post data:', error);
+    }
+  }
+
+  // DELETE PRODUCT
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const handleOpenDeleteDialog = (product) => {
+    setOpenDeleteDialog(true);
+    setSelectedProduct(product);
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  }
+
+
+  // UPDATE PRODUCT
   
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  
+  const handleOpenEditDialog = (product) => {
+    setEditDialogOpen(true);     // Buka dialog
+    setSelectedProduct(product); // Simpan data produk
+  };
+  
+  const handleCloseEditDialog = () => {
+    setSelectedProduct(null);    // Reset data produk
+    setEditDialogOpen(false);    // Tutup dialog
+  };
 
   return (
     <>
+
       <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
@@ -142,7 +183,7 @@ function ProductTable() {
 
           </div>
 
-          <Button value="product" onClick={handleOpen} className="flex items-center mr-8 gap-3  bg-blue" size="sm">
+          <Button value="product" onClick={handleOpenProductDialog} className="flex items-center mr-8 gap-3  bg-blue" size="sm">
             <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Product
           </Button>
 
@@ -210,7 +251,7 @@ function ProductTable() {
                         </IconButton>
                         </Tooltip>
                         <Tooltip content="Edit">
-                        <IconButton variant="text">
+                        <IconButton variant="text" onClick={() => handleOpenEditDialog(product)}>
                             <PencilSquareIcon className="h-4 w-4" />
                         </IconButton>
                         </Tooltip>
@@ -349,12 +390,16 @@ function ProductTable() {
       </Dialog>
 
       {/* PRODUCT */ }
-      <ProductDialog open= {open} handleOpen={handleOpen}  handleChange={handleChange} />
+      <ProductDialog open= {openProductDialog} handleAdd ={handleAdd} handleClose={handleCloseProductDialog} />
+      
+      <AlertProduct show={showAlert} InputText={message} />
       
       {/* VIEW IMAGE */}
       <ViewImageProduct openViewImage={openViewImage} imageURL={imageURL} handleClose={handleCloseViewImage}/>
-
       
+      {/* EDIT */}
+      <EditProductDialog product={selectedProduct} open={editDialogOpen} handleClose={handleCloseEditDialog}/>
+
       {/* DELETE */}
       <DeleteProductDialog product={selectedProduct} open={openDeleteDialog} handleClose={handleCloseDeleteDialog}/>
 

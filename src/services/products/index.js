@@ -1,6 +1,6 @@
 import { api } from "../axios";
 
-export const getDataProduct = async () => {
+  export const getDataProduct = async () => {
     try {
       const response = await api.get('/api/products');
       return response.data;
@@ -29,6 +29,17 @@ export const getDataProduct = async () => {
       throw error;
     }
   };
+
+  export const updateDataProduct = async (id, data) => {
+    try {
+      const response = await api.put(`/api/products/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating product:", error);
+      throw error;
+    }
+  };
+
 
 
 

@@ -19,45 +19,72 @@ import {
     DialogFooter,
   } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-import { getDataProduct, postDataProduct } from "@/services/products";
+import { updateDataProduct } from "@/services/products";
+import {getDataCategory} from "@/services/category";
+import { AlertProduct } from "./AlertProduct";
 
-import { getDataCategory } from "@/services/category";
+function EditProductDialog({product, open, handleClose }){
 
-function ProductDialog({open, handleClose, handleAdd }){
+    if(!product) return null;
 
-  const [categoryList, setCategoryList] = useState([]);
+    const [categoryList, setCategoryList] = useState([]);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const [message, setMessage] = useState('');
+  
+    const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
 
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    stock: '',
-    categoryId: '',
-    image_url: '',
-  });
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+      };
 
-  const handleSelectChange = (val) => {
-    setFormData({ ...formData, categoryId: val });
-  }
+    const [formData, setFormData] = useState({
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        categoryId: product.category.id,
+        image_url: product.image_url,
+      });
 
-  useEffect(() => {
-    getDataCategory()
-      .then(reponse => setCategoryList(reponse))
-      .catch(error => console.error("There was an error!", error));
-  }, []);
+    
+    const handleSelectChange = (val) => {
+      setFormData({ ...formData, categoryId: val });
+    }
+
+    const handleEditSubmit = async () => {
+      try {
+        await updateDataProduct(product.id, formData); // Kirim data ke backend
+            
+        setShowAlert(true);
+        setMessage("Berhasil menyimpan Product");
+        setTimeout(() => setShowAlert(false), 2000);
+        handleClose();
+          // Lakukan fetch ulang data produk untuk memperbarui tabel
+      } catch (error) {
+        setShowAlert(true);
+        setMessage("Gagal menyimpan Product");
+        setTimeout(() => setShowAlert(false), 2000);
+        handleClose();
+        console.error("Gagal memperbarui produk:", error);  
+        }
+      };
+
+    useEffect(() => {
+        getDataCategory()
+            .then(reponse => setCategoryList(reponse))
+            .catch(error => console.error("There was an error!", error));
+    }, []);
 
   return(
     <>
+      
+      <AlertProduct show={showAlert} InputText={message} />
 
-      <Dialog size="sm" open={open} className="p-4">
+      <Dialog size="sm" open={open} handler={handleClose} className="p-4">
       <form onSubmit={() => console.log('enter') }>
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
-            Create New Product
+            Edit Product
           </Typography>
           <Typography className="mt-8 font-normal text-orange-600">
             *Required
@@ -75,6 +102,7 @@ function ProductDialog({open, handleClose, handleAdd }){
               <Input
                 color="gray"
                 size="lg"
+                value={formData.name}
                 onChange={handleChange}
                 placeholder="input name"
                 name="name"
@@ -98,6 +126,7 @@ function ProductDialog({open, handleClose, handleAdd }){
               <Input
                 color="gray"
                 size="lg"
+                value={formData.description}
                 onChange={handleChange}
                 placeholder="input description"
                 name="description"
@@ -121,6 +150,7 @@ function ProductDialog({open, handleClose, handleAdd }){
               <Input
                 color="gray"
                 size="lg"
+                value={formData.price}
                 onChange={handleChange}
                 placeholder="input price"
                 name="price"
@@ -144,6 +174,7 @@ function ProductDialog({open, handleClose, handleAdd }){
               <Input
                 color="gray"
                 size="lg"
+                value={formData.stock}
                 onChange={handleChange}
                 placeholder="input stock"
                 name="stock"
@@ -191,6 +222,7 @@ function ProductDialog({open, handleClose, handleAdd }){
               <Input
                 color="gray"
                 size="lg"
+                value={formData.image_url}
                 onChange={handleChange}
                 placeholder="Input link picture"
                 name="image_url"
@@ -208,8 +240,8 @@ function ProductDialog({open, handleClose, handleAdd }){
           <Button variant="outlined" onClick={handleClose} >
             Cancel
           </Button>
-          <Button className="ml-8 " onClick={() => handleAdd(formData)}>
-            Add Product
+          <Button className="ml-8 " onClick={handleEditSubmit}>
+            Save Product
           </Button>
         </DialogFooter>
         </form>
@@ -219,4 +251,4 @@ function ProductDialog({open, handleClose, handleAdd }){
     )
 }
 
-export default ProductDialog;
+export default EditProductDialog;
