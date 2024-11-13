@@ -19,9 +19,9 @@ import {
     DialogFooter,
   } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-import { getDataProduct, postDataProduct } from "@/services/products";
+import { getDataProduct, postDataProduct } from "@/services/data-management/products";
 
-import { getDataCategory } from "@/services/category";
+import { getDataCategory } from "@/services/data-management/category";
 
 function ProductDialog({open, handleClose, handleAdd }){
 

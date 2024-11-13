@@ -30,7 +30,7 @@ import {
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { getDataProduct, postDataProduct } from "@/services/products";
+import { getDataProduct, postDataProduct } from "@/services/data-management/products";
 import { data } from "autoprefixer";
 import ViewImageProduct from "./ViewImageProduct";
 import ProductDialog from "./ProductDialog";

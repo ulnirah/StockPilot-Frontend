@@ -19,7 +19,7 @@ import {
     DialogFooter,
   } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-import { deleteDataProduct } from "@/services/products";
+import { deleteDataProduct } from "@/services/data-management/products";
 import { AlertProduct } from "./AlertProduct";
 
 function DeleteProductDialog({product, open, handleClose}){

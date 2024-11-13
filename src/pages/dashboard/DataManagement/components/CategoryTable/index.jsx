@@ -31,7 +31,7 @@ import { useState, useEffect } from "react";
 import { AlertCategory } from "./AlertCategory";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { getDataCategory, postDataCategory } from "@/services/category";
+import { getDataCategory, postDataCategory } from "@/services/data-management/category";
 import CategoryDialog from "./CategoryDialog";
  
 const TABLE_HEAD = ["Category Name",  "Action"];

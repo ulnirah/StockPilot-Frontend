@@ -1,5 +1,5 @@
 
-import { getDataSupplier } from "@/services/supplier";
+import { getDataSupplier } from "@/services/data-management/supplier";
 import {
   MagnifyingGlassIcon,
   PencilSquareIcon,
