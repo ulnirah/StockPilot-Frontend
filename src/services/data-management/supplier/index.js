@@ -12,7 +12,7 @@ export const getDataSupplier = async () => {
 
 export const postDataSupplier = async (data) => {
   try {
-    const response = await api.post('/api/categories', data);
+    const response = await api.post('/api/suppliers', data);
     return response.data;
   } catch (error) {
     console.error("Error posting data:", error);
@@ -22,7 +22,7 @@ export const postDataSupplier = async (data) => {
 
 export const deleteDataSupplier = async (id) => {
   try {
-    const response = await api.delete(`/api/categories/${id}`);
+    const response = await api.delete(`/api/suppliers/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting data:", error);
@@ -32,7 +32,7 @@ export const deleteDataSupplier = async (id) => {
 
 export const updateDataSupplier = async (id, data) => {
   try {
-    const response = await api.put(`/api/categories/${id}`, data);
+    const response = await api.put(`/api/suppliers/${id}`, data);
     return response.data;
   } catch (error) {
     console.error("Error updating product:", error);

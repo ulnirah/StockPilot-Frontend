@@ -27,18 +27,10 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@material-tailwind/react";
-import { useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { getDataRetailer } from "@/services/data-management/retailer";
+import { useState, useEffect } from "react";
  
 const TABLE_HEAD = ["Name", "Contact", "Address", "Action"];
- 
-const TABLE_ROWS = [
-  {
-    name: "Kecap",
-    contact: "Kecap yang enak",
-    address: "Food",
-  }
-];
  
  
 export function RetailerTable() {
@@ -48,6 +40,14 @@ export function RetailerTable() {
 
   const [openDelete, setOpenDelete] = useState(false);
   const handleOpenDelete = () => setOpenDelete(!openDelete);
+    
+  const [dataList, setData] = useState([]);
+  
+  useEffect(() => {
+    getDataRetailer()
+      .then(reponse => setData(reponse))
+      .catch(error => console.error("There was an error!", error));
+  }, []);
 
   return (
 
@@ -101,7 +101,7 @@ export function RetailerTable() {
             </tr>
           </thead>
           <tbody>
-            {TABLE_ROWS.map(
+            {dataList.map(
               (
                 {
                   name,
@@ -110,7 +110,7 @@ export function RetailerTable() {
                 },
                 index,
               ) => {
-                const isLast = index === TABLE_ROWS.length - 1;
+                const isLast = index === dataList.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
@@ -122,7 +122,7 @@ export function RetailerTable() {
                         <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-bold"
+                          className="font-normal"
                         >
                           {name}
                         </Typography>

@@ -31,13 +31,6 @@ import { useState, useEffect } from "react";
  
 const TABLE_HEAD = ["Name", "Contact", "Address", "Action"];
  
-const TABLE_ROWS = [
-  {
-    name: "Kecap",
-    contact: "Kecap yang enak",
-    address: "Food",
-  }
-];
  
 export function SupplierTable() {
 

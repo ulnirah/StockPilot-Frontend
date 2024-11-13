@@ -26,29 +26,16 @@ import {
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 
-const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
+const TABLE_HEAD = ["Order Date", "Received Date", "Product", "Quantity", "Supplier", "Status", "Action"];
  
 const TABLE_ROWS = [
   {
-    name: "Spotify",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
-  },
-  {
-    name: "Amazon",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
-  },
-  {
-    name: "Pinterest",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
+    orderDate: "10-09-2023",
+    receivedDate: "10-09-2023",
+    product: "Food",
+    quantity: "15",
+    supplier: "14",
+    status: "Completed",
   },
 ];
  
@@ -119,11 +106,12 @@ export function SupplyTable() {
               {TABLE_ROWS.map(
                 (
                   {
-                    name,
-                    description,
-                    category,
-                    price,
-                    stock,
+                    orderDate,
+                    receivedDate,
+                    product,
+                    quantity,
+                    supplier,
+                    status,
                   },
                   index,
                 ) => {
@@ -141,7 +129,7 @@ export function SupplyTable() {
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {name}
+                            {orderDate}
                           </Typography>
                         </div>
                       </td>
@@ -151,7 +139,7 @@ export function SupplyTable() {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {description}
+                          {receivedDate}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -160,7 +148,7 @@ export function SupplyTable() {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {category}
+                          {product}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -169,17 +157,26 @@ export function SupplyTable() {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          Rp.{price}
+                          {quantity}
                         </Typography>
                       </td>
                       <td className={classes}>
-                          <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                          >
-                              Rp.{stock}
-                          </Typography>
+                        <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                        >
+                          {supplier}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                        >
+                          {status}
+                        </Typography>
                       </td>
                       <td className={classes}>
                         <Tooltip content="Edit User">

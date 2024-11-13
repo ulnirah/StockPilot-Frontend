@@ -27,11 +27,10 @@ import {
 } from "@material-tailwind/react";
 import { usePDF } from 'react-to-pdf';
 import { useState, useEffect } from "react";
-const TABLE_HEAD = ["Order Date", "Transaction Date", "Product", "Quantity", "Stock", "Transaction Type", "Supplier/Retailer"];
+const TABLE_HEAD = [ "Transaction Date", "Product", "Quantity", "Stock", "Transaction Type", "Supplier/Retailer"];
  
 const TABLE_ROWS = [
   {
-    orderDate: "10-09-2023",
     transactionDate: "10-09-2023",
     product: "Ketchup",
     quantity: "10",
@@ -40,16 +39,6 @@ const TABLE_ROWS = [
     transactionBy: "Borma"
   },
   {
-    orderDate: "10-09-2023",
-    transactionDate: "10-09-2023",
-    product: "Ketchup",
-    quantity: "10",
-    stock: "1",
-    transactionType: "Inbound",
-    transactionBy: "Borma"
-  },
-  {
-    orderDate: "10-09-2023",
     transactionDate: "10-09-2023",
     product: "Ketchup",
     quantity: "10",
@@ -140,17 +129,6 @@ export function TransactionTable() {
   
                   return (
                     <tr key={orderDate}>
-                      <td className={classes}>
-                        <div className="gap-3">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {orderDate}
-                          </Typography>
-                        </div>
-                      </td>
                       <td className={classes}>
                         <Typography
                           variant="small"

@@ -40,16 +40,16 @@ const TABLE_HEAD = ["Order Date", "Delivery Date", "Product", "Quantity", "Retai
  
 const TABLE_ROWS = [
   {
-    orderDate: "Spotify",
-    deliveryDate: "Kecap yang enak",
+    orderDate: "10-09-2023",
+    deliveryDate: "10-09-2023",
     product: "Food",
     quantity: "15.000",
     retailerName: "14",
     status: "Delivered",
   },
   {
-    orderDate: "Spotify",
-    deliveryDate: "Kecap yang enak",
+    orderDate: "10-09-2023",
+    deliveryDate: "10-09-2023",
     product: "Food",
     quantity: "15.000",
     retailerName: "14",
