@@ -38,14 +38,13 @@ import DeleteProductDialog from "./DeleteProductDialog";
 import EditProductDialog from "./EditProductDialog";
 import { AlertProduct } from "./AlertProduct";
 
-const TABLE_HEAD = ["Name", "Description", "Category", "Price", "Stock", "Action"];
+const TABLE_HEAD = ["Product Name", "Description", "Category", "Price", "Stock", "Action"];
  
 const ITEMS_PER_PAGE = 5
 
 function ProductTable() {
 
   // GET DATA TABLE
-
   const [message, setMessage] = useState('');
   
   const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
@@ -391,7 +390,7 @@ function ProductTable() {
 
       {/* PRODUCT */ }
       <ProductDialog open= {openProductDialog} handleAdd ={handleAdd} handleClose={handleCloseProductDialog} />
-      
+
       <AlertProduct show={showAlert} InputText={message} />
       
       {/* VIEW IMAGE */}

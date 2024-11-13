@@ -75,6 +75,7 @@ function ProductDialog({open, handleClose, handleAdd }){
               <Input
                 color="gray"
                 size="lg"
+                required
                 onChange={handleChange}
                 placeholder="input name"
                 name="name"

@@ -4,12 +4,46 @@ import {
   Checkbox,
   Button,
   Typography,
+  Alert,
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { loginUser } from "@/services/auth/login"; 
+import { useNavigate } from "react-router-dom"; // Untuk navigasi setelah login
 
 
-export function SignIn() {
+export function Login() {
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const credentials = { username, password };
+      const response = await loginUser(credentials);
+
+      // Simpan token ke localStorage
+      localStorage.setItem("authToken", response.token);
+
+      // Redirect ke dashboard atau halaman lain
+      alert("Login berhasil!");
+      navigate("/dashboard/home"); // Sesuaikan dengan rute aplikasi Anda
+    } catch (err) {
+      setError(err.response?.data?.message || "Login gagal.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
+
     <section className="m-8 flex gap-4">
       <div className="w-full lg:w-3/5 ">
         <div className="flex justify-center">
@@ -22,18 +56,23 @@ export function SignIn() {
         <div className="text-center">
           <Typography variant="h2" className="font-bold mb-4">Sign In</Typography>
         </div>
-        <form className="mt-6 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
+
+        {error && <Alert color="red">{error}</Alert>}
+        <form className="mt-6 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
-            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-              Your email
+            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium" >
+              Username
             </Typography>
             <Input
               size="lg"
-              placeholder="name@mail.com"
+              placeholder="username"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              type="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
               Password
@@ -46,10 +85,18 @@ export function SignIn() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <Button href="" className="mt-6 bg-blue" fullWidth>
-            <Link to="/dashboard/home" >Sign in</Link>
+          <Button             
+            type="submit"
+            color="blue"
+            disabled={loading}
+            className="mt-6 bg-blue" 
+            fullWidth>
+            {/* <Link to="" >Sign in</Link> */}
+            {loading ? "Logging in..." : "Login"}
           </Button>
 
           <div className="flex items-center justify-between gap-2 mt-2">
@@ -78,4 +125,4 @@ export function SignIn() {
   );
 }
 
-export default SignIn;
+export default Login;

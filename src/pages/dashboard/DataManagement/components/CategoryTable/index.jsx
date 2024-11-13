@@ -28,11 +28,13 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
+import { AlertCategory } from "./AlertCategory";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { getDataCategory } from "@/services/category";
+import { getDataCategory, postDataCategory } from "@/services/category";
+import CategoryDialog from "./CategoryDialog";
  
-const TABLE_HEAD = ["Category",  "Action"];
+const TABLE_HEAD = ["Category Name",  "Action"];
  
 const TABLE_ROWS = [
   {
@@ -60,21 +62,51 @@ const TABLE_ROWS = [
  
 export function CategoryTable() {
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(!open);
+  // GET DATA TABLE
+
+  const [message, setMessage] = useState('');
+  
+  const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
 
   const [openDelete, setOpenDelete] = useState(false);
   const handleOpenDelete = () => setOpenDelete(!openDelete);
 
   const [dataList, setData] = useState([]);
   
-  useEffect(() => {
+  const handleInitialData= () => {
     getDataCategory()
       .then(reponse => setData(reponse))
       .catch(error => console.error("There was an error!", error));
+  }
+
+  useEffect(() => {
+    handleInitialData()
   }, []);
 
-  console.log("data category",dataList)
+  // ADD CATEGORY
+  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
+  const handleOpenCategoryDialog = () => setOpenCategoryDialog(true);
+
+  const handleCloseCategoryDialog = () => setOpenCategoryDialog(false);
+
+  const handleAdd = async (formData) =>{
+    try {
+      const response = await postDataCategory(formData);
+      console.log('Data posted successfully:', response);
+
+      setShowAlert(true);
+      setMessage("Berhasil menambahkan Product");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseCategoryDialog();
+      handleInitialData();
+      // Tambahkan aksi setelah berhasil mengirim data, seperti mengupdate state atau mengarahkan ke halaman lain
+    } catch (error) {
+      setMessage("Gagal menambahkan Product");
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+      console.error('Failed to post data:', error);
+    }
+  }
 
   return (
 
@@ -100,7 +132,7 @@ export function CategoryTable() {
                 />
             </div>
           </div>
-          <Button value="product" onClick={handleOpen} className="flex items-center mr-8 gap-2 bg-blue" size="sm">
+          <Button value="product" onClick={handleOpenCategoryDialog} className="flex items-center mr-8 gap-2 bg-blue" size="sm">
             <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Category
           </Button>
 
@@ -209,49 +241,11 @@ export function CategoryTable() {
       </CardFooter>
       </Card>
       
-      {/*new category*/}
-      <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
-        <DialogHeader className="relative m-0 block">
-          <Typography variant="h4" color="blue-gray">
-            Create New Category
-          </Typography>
-          <Typography className="mt-8 font-normal text-orange-600">
-            *Required
-          </Typography>
-        </DialogHeader>
-        <DialogBody className="space-y-4 pb-6">
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Category
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="Input category name"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-        </DialogBody>
-        <DialogFooter className="flex justify-center">
-          <Button variant="outlined" onClick={handleOpen} >
-            Cancel
-          </Button>
-          <Button className="ml-8 " onClick={handleOpen}>
-            Add Category
-          </Button>
-        </DialogFooter>
-      </Dialog>
+      {/* CATEGORY DIALOG*/}
+      <CategoryDialog open={openCategoryDialog} handleAdd = {handleAdd} handleClose = {handleCloseCategoryDialog}/>
+
+      <AlertCategory show={showAlert} InputText={message} />
+    
 
       {/* DELETE */}
       <Dialog size="xs" open={openDelete} handler={handleOpenDelete}>

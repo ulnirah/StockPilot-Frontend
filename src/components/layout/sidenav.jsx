@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useMaterialTailwindController, setOpenSidenav } from "@/context";
+import { useNavigate } from "react-router-dom";
 
 export function Sidenav({ brandImg, brandName, routes }) {
   const [controller, dispatch] = useMaterialTailwindController();
@@ -16,6 +17,14 @@ export function Sidenav({ brandImg, brandName, routes }) {
     dark: "bg-blue",
     white: "bg-white shadow-sm",
     transparent: "bg-transparent",};
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    alert("Anda telah logout!");
+    navigate("/login");
+  };
 
   return (
     <aside
@@ -66,22 +75,42 @@ export function Sidenav({ brandImg, brandName, routes }) {
             )}
             {pages.map(({ icon, name, path }) => (
               <li key={name}>
-                <NavLink to={`/${layout}${path}`}>
-                  {({ isActive }) => (
-                    <Button
-                      className= {`${isActive ? " bg-blue text-white"  : "bg-white text-blue-gray-400" } hover:shadow-none shadow-none flex items-center gap-4 px-4 capitalize `}
-                      fullWidth
+                {name.toLowerCase() === "logout" ? (
+                  <Button
+                    className="bg-white text-blue-gray-400 hover:shadow-none shadow-none flex items-center gap-4 px-4 capitalize"
+                    onClick={handleLogout} // Memanggil handleLogout jika tombol Logout
+                    fullWidth
+                  >
+                    {icon}
+                    <Typography
+                      color="inherit"
+                      className="font-medium capitalize"
                     >
-                      {icon}
-                      <Typography
-                        color="inherit"
-                        className="font-medium capitalize"
+                      {name}
+                    </Typography>
+                  </Button>
+                ) : (
+                  <NavLink to={`/${layout}${path}`}>
+                    {({ isActive }) => (
+                      <Button
+                        className={`${
+                          isActive
+                            ? "bg-blue text-white"
+                            : "bg-white text-blue-gray-400"
+                        } hover:shadow-none shadow-none flex items-center gap-4 px-4 capitalize`}
+                        fullWidth
                       >
-                        {name}
-                      </Typography>
-                    </Button>
-                  )}
-                </NavLink>
+                        {icon}
+                        <Typography
+                          color="inherit"
+                          className="font-medium capitalize"
+                        >
+                          {name}
+                        </Typography>
+                      </Button>
+                    )}
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>

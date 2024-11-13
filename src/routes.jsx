@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { Home, Profile, DataManagement, InventoryManagement } from "@/pages/dashboard";
 
-import { SignIn } from "@/pages/auth";
+import { Login } from "@/pages/auth";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -49,9 +49,9 @@ export const routes = [
     pages: [
       {
         icon: <ArrowLeftOnRectangleIcon  {...icon} />,
-        name: "sign out",
-        path: "/sign-in",
-        element: <SignIn />,
+        name: "logout",
+        path: "/login",
+        element: <Login/>,
       },
     ],
   },
