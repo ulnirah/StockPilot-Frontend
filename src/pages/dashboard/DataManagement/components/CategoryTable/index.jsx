@@ -29,50 +29,46 @@ import {
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import { AlertCategory } from "./AlertCategory";
-
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { getDataCategory, postDataCategory } from "@/services/data-management/category";
+import { deleteDataCategory, getDataCategory, postDataCategory, updateDataCategory } from "@/services/data-management/category";
 import CategoryDialog from "./CategoryDialog";
+import DeleteCategoryDialog from "./DeleteCategoryDialog";
+import EditCategoryDialog from "./EditCategoryDialog";
  
 const TABLE_HEAD = ["Category Name",  "Action"];
- 
-const TABLE_ROWS = [
-  {
-    name: "Kecap",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
-  },
-  {
-    name: "Kecap",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
-  },
-  {
-    name: "Kecap",
-    description: "Kecap yang enak",
-    category: "Food",
-    price: "15.000",
-    stock: "14",
-  },
-];
- 
+
 export function CategoryTable() {
 
   // GET DATA TABLE
 
   const [message, setMessage] = useState('');
-  
   const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
-
-  const [openDelete, setOpenDelete] = useState(false);
-  const handleOpenDelete = () => setOpenDelete(!openDelete);
 
   const [dataList, setData] = useState([]);
   
+  const [selectedCategory, setSelectedCategory] = useState();
+
+  const ITEMS_PER_PAGE = 5 
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(dataList.length / ITEMS_PER_PAGE);
+
+  const currentData = dataList.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
   const handleInitialData= () => {
     getDataCategory()
       .then(reponse => setData(reponse))
@@ -108,6 +104,72 @@ export function CategoryTable() {
     }
   }
 
+  // DELETE CATEGORY
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const handleOpenDeleteDialog = (category) => {
+    setOpenDeleteDialog(true);
+    setSelectedCategory(category);
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  }
+
+  const handleDelete = async (id) => {
+    try {
+    await deleteDataCategory(id);
+
+    setShowAlert(true);
+    setMessage("Berhasil menghapus Category");
+    setTimeout(() => setShowAlert(false), 2000);
+    handleCloseDeleteDialog()
+    handleInitialData();
+    // Perbarui state produk jika diperlukan
+    } catch (error) {
+    setMessage("Gagal menghapus Category");
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
+    }
+  };
+
+
+  // UPDATE CATEGORY
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  
+  const handleOpenEditDialog = (category) => {
+    setEditDialogOpen(true);     // Buka dialog
+    setSelectedCategory(category); // Simpan data produk
+  };
+  
+  const handleCloseEditDialog = () => {
+    setSelectedCategory(null);    // Reset data produk
+    setEditDialogOpen(false);    // Tutup dialog
+  };
+
+  const handleEditSubmit = async (formData) => {
+    try {
+
+      if (!selectedCategory?.id) {
+        throw new Error("Product ID is not defined");
+      }
+
+      await updateDataCategory(selectedCategory.id,formData); // Kirim data ke backend
+          
+      setShowAlert(true);
+      setMessage("Berhasil menyimpan Category");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseEditDialog();
+      handleInitialData();
+        // Lakukan fetch ulang data produk untuk memperbarui tabel
+    } catch (error) {
+      setShowAlert(true);
+      setMessage("Gagal menyimpan Category");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseEditDialog();
+      }
+    };
+
   return (
 
     <>
@@ -135,7 +197,6 @@ export function CategoryTable() {
             <Button value="product" onClick={handleOpenCategoryDialog} className="flex items-center mr-8 gap-2 bg-blue" size="sm">
               <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Category
             </Button>
-
           </div>
         </div>
         <CardBody className="overflow-scroll px-0">
@@ -159,30 +220,30 @@ export function CategoryTable() {
               </tr>
             </thead>
             <tbody>
-            {dataList.length > 0 ? (
-                dataList.map(({ name},index,) => {
-                    const isLast = index === dataList.length - 1;
+            {currentData.length > 0 ? (
+                currentData.map((category,index,) => {
+                    const isLast = index === currentData.length - 1;
                     const classes = isLast? "p-4" : "p-4 border-b border-blue-gray-50";
     
                     return (
-                      <tr key={name}>
+                      <tr key={category.name}>
                         <td className={classes}>
                           <Typography
                             variant="small"
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {name}
+                            {category.name}
                           </Typography>
                         </td>
                         <td className={classes}>
                         <Tooltip content="Edit">
-                            <IconButton variant="text">
+                            <IconButton variant="text" onClick={() => handleOpenEditDialog(category)}>
                                 <PencilSquareIcon className="h-4 w-4" />
                             </IconButton>
                         </Tooltip>
                         <Tooltip content="Delete">
-                            <IconButton variant="text" onClick={handleOpenDelete}>
+                            <IconButton variant="text" onClick={ () => handleOpenDeleteDialog(category) }>
                                 <TrashIcon className="h-4 w-4" color="red" />
                             </IconButton>
                           </Tooltip>
@@ -209,83 +270,38 @@ export function CategoryTable() {
           </table>
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          <Button variant="outlined" size="sm">
-            Previous
-          </Button>
-          <div className="flex items-center gap-2">
-            <IconButton variant="outlined" size="sm">
-              1
+        <Button variant="outlined" size="sm" onClick={handlePrevious} disabled={currentPage === 1}>
+          Previous
+        </Button>
+        <div className="flex items-center gap-2">
+        {Array.from({ length: totalPages }, (_, index) => (
+            <IconButton
+              key={index}
+              variant={currentPage === index + 1 ? "outlined" : "text"}
+              size="sm"
+              onClick={() => setCurrentPage(index + 1)}
+            >
+              {index + 1}
             </IconButton>
-            <IconButton variant="text" size="sm">
-              2
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              3
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              ...
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              8
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              9
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              10
-            </IconButton>
-          </div>
-          <Button variant="outlined" size="sm">
-            Next
-          </Button>
+          ))}
+        </div>
+        <Button variant="outlined" size="sm"onClick={handleNext} disabled={currentPage === totalPages}>
+          Next
+        </Button>
         </CardFooter>
       </Card>
       
       {/* CATEGORY DIALOG*/}
       <CategoryDialog open={openCategoryDialog} handleAdd = {handleAdd} handleClose = {handleCloseCategoryDialog}/>
-
       <AlertCategory show={showAlert} InputText={message} />
-    
 
       {/* DELETE */}
-      <Dialog size="xs" open={openDelete} handler={handleOpenDelete}>
-        <DialogBody divider className="grid place-items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-16 w-16 text-red-500 mt-4"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <Typography color="red" variant="h4">
-            Category Delete
-          </Typography>
-          <Typography className="text-center font-normal">
-            Are you sure to delete?
-          </Typography>
-        </DialogBody>
-        <div className="flex justify-between ">
-            <Typography className="font-normal ml-8 mt-4">
-                Name
-            </Typography>
-            <Typography className="font-normal mr-8 mt-4">
-                ABC KECAP
-            </Typography>
-        </div>
-        <DialogFooter className="flex justify-center">
-          <Button color="red" onClick={handleOpenDelete}>
-            No, Cancel
-          </Button>
-          <Button className="ml-8" variant="outlined" onClick={handleOpenDelete}>
-            Yes, Delete
-          </Button>
-        </DialogFooter>
-      </Dialog>
+      <DeleteCategoryDialog category={selectedCategory} open = {openDeleteDialog}  handleDelete = {handleDelete} handleClose = {handleCloseDeleteDialog}/>
+
+      {/*EDIT CATEGORY */}
+      <EditCategoryDialog category={selectedCategory} open={editDialogOpen} handleEditSubmit={handleEditSubmit} handleClose={handleCloseEditDialog}/>
+
+
     
     </>
   );

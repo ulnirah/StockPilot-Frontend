@@ -23,15 +23,11 @@ import { updateDataProduct } from "@/services/data-management/products";
 import {getDataCategory} from "@/services/data-management/category";
 import { AlertProduct } from "./AlertProduct";
 
-function EditProductDialog({product, open, handleClose }){
+function EditProductDialog({product, open, handleEditSubmit, handleClose }){
 
     if(!product) return null;
 
     const [categoryList, setCategoryList] = useState([]);
-
-    const [message, setMessage] = useState('');
-  
-    const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,24 +47,6 @@ function EditProductDialog({product, open, handleClose }){
       setFormData({ ...formData, categoryId: val });
     }
 
-    const handleEditSubmit = async () => {
-      try {
-        await updateDataProduct(product.id, formData); // Kirim data ke backend
-            
-        setShowAlert(true);
-        setMessage("Berhasil menyimpan Product");
-        setTimeout(() => setShowAlert(false), 2000);
-        handleClose();
-          // Lakukan fetch ulang data produk untuk memperbarui tabel
-      } catch (error) {
-        setShowAlert(true);
-        setMessage("Gagal menyimpan Product");
-        setTimeout(() => setShowAlert(false), 2000);
-        handleClose();
-        console.error("Gagal memperbarui produk:", error);  
-        }
-      };
-
     useEffect(() => {
         getDataCategory()
             .then(reponse => setCategoryList(reponse))
@@ -77,10 +55,7 @@ function EditProductDialog({product, open, handleClose }){
 
   return(
     <>
-      
-      <AlertProduct show={showAlert} InputText={message} />
-
-      <Dialog size="sm" open={open} handler={handleClose} className="p-4">
+      <Dialog size="sm" open={open} className="p-4">
       <form onSubmit={() => console.log('enter') }>
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
@@ -240,7 +215,7 @@ function EditProductDialog({product, open, handleClose }){
           <Button variant="outlined" onClick={handleClose} >
             Cancel
           </Button>
-          <Button className="ml-8 " onClick={handleEditSubmit}>
+          <Button className="ml-8 " onClick={ () => {handleEditSubmit(formData)}}>
             Save Product
           </Button>
         </DialogFooter>

@@ -19,19 +19,19 @@ import {
     DialogFooter,
   } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-import {getDataCategory} from "@/services/data-management/category";
 
-function EditCategoryDialog({category, open, handleEditSubmit, handleClose }){
+function EditSupplierDialog({supplier, open, handleEditSubmit, handleClose }){
 
-    if(!category) return null;
-
+    if(!supplier) return null;
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
       };
 
     const [formData, setFormData] = useState({
-        name: category.name,
+        name: supplier.name,
+        contact:supplier.contact,
+        address: supplier.address,
       });
 
   return(
@@ -71,6 +71,54 @@ function EditCategoryDialog({category, open, handleEditSubmit, handleClose }){
                 }}
               />
             </div>
+            <div>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="mb-2 text-left font-medium"
+            >
+              Contact Info
+            </Typography>
+            <Input
+              color="gray"
+              size="lg"
+              value={formData.contact}
+              onChange={handleChange}
+              placeholder="input contact info"
+              name="contact"
+              className="placeholder:opacity-100 focus:!border-t-gray-900"
+              containerProps={{
+                className: "!min-w-full",
+              }}
+              labelProps={{
+                className: "hidden",
+              }}
+            />
+          </div>
+          <div>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="mb-2 text-left font-medium"
+            >
+              Address
+            </Typography>
+            <Input
+              color="gray"
+              size="lg"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="input address"
+              name="address"
+              className="placeholder:opacity-100 focus:!border-t-gray-900"
+              containerProps={{
+                className: "!min-w-full",
+              }}
+              labelProps={{
+                className: "hidden",
+              }}
+            />
+          </div>
         </DialogBody>
         <DialogFooter className="flex justify-center">
           <Button variant="outlined" onClick={handleClose} >
@@ -87,4 +135,4 @@ function EditCategoryDialog({category, open, handleEditSubmit, handleClose }){
     )
 }
 
-export default EditCategoryDialog;
+export default EditSupplierDialog;

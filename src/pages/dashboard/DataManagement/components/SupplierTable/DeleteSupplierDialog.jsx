@@ -18,10 +18,8 @@ import {
     DialogHeader,
     DialogFooter,
   } from "@material-tailwind/react";
-import { useState, useEffect } from "react";
-import { deleteDataCategory } from "@/services/data-management/category";
 
-function DeleteCategoryDialog({category, open, handleDelete, handleClose}){
+function DeleteSupplierDialog({supplier, open, handleDelete, handleClose}){
 
     return(
         <>
@@ -41,7 +39,7 @@ function DeleteCategoryDialog({category, open, handleDelete, handleClose}){
                 />
             </svg>
             <Typography color="red" variant="h4">
-                Category Delete
+                Supplier Delete
             </Typography>
             <Typography className="text-center font-normal">
                 Are you sure to delete?
@@ -52,14 +50,14 @@ function DeleteCategoryDialog({category, open, handleDelete, handleClose}){
                     Name
                 </Typography>
                 <Typography className="font-normal mr-8 mt-4">
-                    {category?.name}
+                    {supplier?.name}
                 </Typography>
             </div>
             <DialogFooter className="flex justify-center">
             <Button color="red" onClick={handleClose}>
                 No, Cancel
             </Button>
-            <Button className="ml-8" variant="outlined" onClick={() => {handleDelete(category.id)}}>
+            <Button className="ml-8" variant="outlined" onClick={() => {handleDelete(supplier.id)}}>
                 Yes, Delete
             </Button>
             </DialogFooter>
@@ -70,4 +68,4 @@ function DeleteCategoryDialog({category, open, handleDelete, handleClose}){
 }
 
 
-export default DeleteCategoryDialog;
+export default DeleteSupplierDialog;

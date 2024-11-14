@@ -20,33 +20,11 @@ import {
   } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import { deleteDataProduct } from "@/services/data-management/products";
-import { AlertProduct } from "./AlertProduct";
 
-function DeleteProductDialog({product, open, handleClose}){
-
-    const [message, setMessage] = useState('');
-  
-    const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
-
-    const handleDelete = async (id) => {
-        try {
-        await deleteDataProduct(id);
-
-        setShowAlert(true);
-        setMessage("Berhasil menghapus Product");
-        setTimeout(() => setShowAlert(false), 2000);
-        handleClose()
-        // Perbarui state produk jika diperlukan
-        } catch (error) {
-        setMessage("Gagal menghapus Product");
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 2000);
-        }
-    };
+function DeleteProductDialog({product, open, handleDelete, handleClose}){
 
     return(
         <>
-            <AlertProduct show={showAlert} InputText={message} />
 
             <Dialog size="xs" open={open}>
             <DialogBody divider className="grid place-items-center gap-2">

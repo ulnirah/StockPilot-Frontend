@@ -30,12 +30,13 @@ import {
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { getDataProduct, postDataProduct } from "@/services/data-management/products";
+import { getDataProduct, postDataProduct, deleteDataProduct, updateDataProduct } from "@/services/data-management/products";
 import { data } from "autoprefixer";
 import ViewImageProduct from "./ViewImageProduct";
 import ProductDialog from "./ProductDialog";
 import DeleteProductDialog from "./DeleteProductDialog";
 import EditProductDialog from "./EditProductDialog";
+
 import { AlertProduct } from "./AlertProduct";
 
 const TABLE_HEAD = ["Product Name", "Description", "Category", "Price", "Stock", "Action"];
@@ -138,6 +139,23 @@ function ProductTable() {
     setOpenDeleteDialog(false);
   }
 
+  const handleDelete = async (id) => {
+    try {
+    await deleteDataProduct(id);
+
+    setShowAlert(true);
+    setMessage("Berhasil menghapus Product");
+    setTimeout(() => setShowAlert(false), 2000);
+    handleCloseDeleteDialog()
+    handleInitialData();
+    // Perbarui state produk jika diperlukan
+    } catch (error) {
+    setMessage("Gagal menghapus Product");
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
+    }
+  };
+
 
   // UPDATE PRODUCT
   
@@ -152,6 +170,29 @@ function ProductTable() {
     setSelectedProduct(null);    // Reset data produk
     setEditDialogOpen(false);    // Tutup dialog
   };
+
+  const handleEditSubmit = async (formData) => {
+    try {
+
+      if (!selectedProduct?.id) {
+        throw new Error("Product ID is not defined");
+      }
+
+      await updateDataProduct(selectedProduct.id,formData); // Kirim data ke backend
+          
+      setShowAlert(true);
+      setMessage("Berhasil menyimpan Product");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseEditDialog();
+      handleInitialData();
+        // Lakukan fetch ulang data produk untuk memperbarui tabel
+    } catch (error) {
+      setShowAlert(true);
+      setMessage("Gagal menyimpan Product");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseEditDialog();
+      }
+    };
 
   return (
     <>
@@ -397,10 +438,10 @@ function ProductTable() {
       <ViewImageProduct openViewImage={openViewImage} imageURL={imageURL} handleClose={handleCloseViewImage}/>
       
       {/* EDIT */}
-      <EditProductDialog product={selectedProduct} open={editDialogOpen} handleClose={handleCloseEditDialog}/>
+      <EditProductDialog product={selectedProduct} open={editDialogOpen} handleEditSubmit={handleEditSubmit} handleClose={handleCloseEditDialog}/>
 
       {/* DELETE */}
-      <DeleteProductDialog product={selectedProduct} open={openDeleteDialog} handleClose={handleCloseDeleteDialog}/>
+      <DeleteProductDialog product={selectedProduct} open={openDeleteDialog} handleDelete={handleDelete} handleClose={handleCloseDeleteDialog}/>
 
     </>
   );
