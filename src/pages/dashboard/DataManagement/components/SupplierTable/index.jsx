@@ -103,7 +103,7 @@ export function SupplierTable() {
                 {
                   name,
                   contact,
-                  orderCount,
+                  address,
                 },
                 index,
               ) => {
@@ -140,7 +140,7 @@ export function SupplierTable() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {orderCount}
+                        {address}
                       </Typography>
                     </td>
                     <td className={classes}>

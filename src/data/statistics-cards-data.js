@@ -7,10 +7,10 @@ import {
 
 export const statisticsCardsData = [
   {
-    color: "gray",
+    color: "indigo",
     icon: BanknotesIcon,
-    title: "Today's Money",
-    value: "$53k",
+    title: "Total Products",
+    value: "53",
     footer: {
       color: "text-green-500",
       value: "+55%",
@@ -18,10 +18,10 @@ export const statisticsCardsData = [
     },
   },
   {
-    color: "gray",
+    color: "indigo",
     icon: UsersIcon,
-    title: "Today's Users",
-    value: "2,300",
+    title: "Total Categories",
+    value: "21",
     footer: {
       color: "text-green-500",
       value: "+3%",
@@ -29,10 +29,10 @@ export const statisticsCardsData = [
     },
   },
   {
-    color: "gray",
+    color: "indigo",
     icon: UserPlusIcon,
-    title: "New Clients",
-    value: "3,462",
+    title: "Total Supplier",
+    value: "32",
     footer: {
       color: "text-red-500",
       value: "-2%",
@@ -40,10 +40,10 @@ export const statisticsCardsData = [
     },
   },
   {
-    color: "gray",
+    color: "indigo",
     icon: ChartBarIcon,
-    title: "Sales",
-    value: "$103,430",
+    title: "Total Retailers",
+    value: "212",
     footer: {
       color: "text-green-500",
       value: "+5%",

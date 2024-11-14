@@ -7,9 +7,9 @@ import {
 } from "@material-tailwind/react";
 import PropTypes from "prop-types";
 
-export function StatisticsCard({ color, icon, title, value, footer }) {
+export function StatisticsCard({ color, icon, title, value }) {
   return (
-    <Card className="border border-blue-gray-100 shadow-sm">
+    <Card className="border border-blue-gray-100 shadow-sm p-3">
       <CardHeader
         variant="gradient"
         color={color}
@@ -19,19 +19,14 @@ export function StatisticsCard({ color, icon, title, value, footer }) {
       >
         {icon}
       </CardHeader>
-      <CardBody className="p-4 text-right">
+      <CardBody className="p-6 ml-20 text-left">
         <Typography variant="small" className="font-normal text-blue-gray-600">
           {title}
         </Typography>
-        <Typography variant="h4" color="blue-gray">
+        <Typography variant="h4" color="blue">
           {value}
         </Typography>
       </CardBody>
-      {footer && (
-        <CardFooter className="border-t border-blue-gray-50 p-4">
-          {footer}
-        </CardFooter>
-      )}
     </Card>
   );
 }
@@ -43,6 +38,7 @@ StatisticsCard.defaultProps = {
 
 StatisticsCard.propTypes = {
   color: PropTypes.oneOf([
+    "blue",
     "white",
     "blue-gray",
     "gray",
