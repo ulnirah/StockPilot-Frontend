@@ -20,3 +20,24 @@ export const getDataOrder = async () => {
       throw error;
     }
   };
+
+  export const updateOrderStatus = async (orderId, status) => {
+    try {
+      // Log data yang akan dikirim
+      console.log("Updating order:", { orderId, status });
+   
+      // Memanggil endpoint
+      if(status === "Completed"){
+        await api.post(`/api/orders/${orderId}/receive`, { status });
+      }else{
+        await api.put(`/api/orders/${orderId}/cancel`, { status });
+      }
+      // Mengembalikan data dari response
+
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      throw error; // Melempar error jika terjadi
+    }
+  };
+
+

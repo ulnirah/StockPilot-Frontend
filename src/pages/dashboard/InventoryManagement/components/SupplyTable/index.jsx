@@ -1,4 +1,4 @@
-import { PencilIcon } from "@heroicons/react/24/solid";
+import { CheckCircleIcon, PencilIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import {
   ArrowDownTrayIcon,
   DocumentArrowUpIcon,
@@ -26,7 +26,7 @@ import {
   Select,
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-import { getDataOrder, postDataOrder } from "@/services/inventory/supply";
+import { getDataOrder, postDataOrder, updateOrderStatus } from "@/services/inventory/supply";
 import { usePDF } from 'react-to-pdf';
 import OrderDialog from "./OrderDialog";
 import { AlertOrder } from "./AlertOrder";
@@ -55,8 +55,9 @@ export function SupplyTable() {
     setSearchQuery(e.target.value);
   };
 
-  const filteredData = dataList.filter((order) =>
-    order.supplier.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = dataList.filter((order) => 
+  
+    order.items[0].product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const currentData = filteredData.slice(
@@ -101,7 +102,6 @@ export function SupplyTable() {
   const handleCloseOrderDialog = () => setOpenOrderDialog(false);
 
   const handleAdd = async (formData) =>{
-    
     try {
       const response = await postDataOrder(formData);
       console.log('Data posted successfully:', response);
@@ -121,6 +121,25 @@ export function SupplyTable() {
   }
 
   // CANCELED
+
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+      const response = await updateOrderStatus(orderId, newStatus);
+      console.log(`Order ${orderId} updated successfully:`, response);
+  
+      // Update pesan notifikasi
+      setMessage(`Order ${orderId} updated to ${newStatus}`);
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+  
+      // Refresh data dari backend
+      handleInitialData();
+    } catch (error) {
+      setMessage(`Failed to update order ${orderId}`);
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+    }
+  };
 
   // RECIEVED
 
@@ -251,11 +270,15 @@ export function SupplyTable() {
                       </td>
                       <td className={classes}>
                         <Tooltip content="Edit User">
-                          <IconButton variant="text">
-                            <PencilIcon className="h-4 w-4" />
+                          <IconButton variant="text" onClick={() => handleStatusUpdate(order.id, "Cancelled")}>
+                            <XCircleIcon className="h-4 w-4" />
                           </IconButton>
                         </Tooltip>
-                        
+                        <Tooltip content="Edit User">
+                          <IconButton variant="text" onClick={() => handleStatusUpdate(order.id, "Completed")}>
+                            <CheckCircleIcon className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
                       </td>
                     </tr>
                   );
