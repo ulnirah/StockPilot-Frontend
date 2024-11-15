@@ -291,21 +291,21 @@ export function SupplierTable() {
         </table>
       </CardBody>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-      <Button variant="outlined" size="sm" onClick={handlePrevious} disabled={currentPage === 1}>
+        <Button variant="outlined" size="sm" onClick={handlePrevious} disabled={currentPage === 1}>
           Previous
         </Button>
-        <div className="flex items-center gap-2">
-        {Array.from({ length: totalPages }, (_, index) => (
-            <IconButton
-              key={index}
-              variant={currentPage === index + 1 ? "outlined" : "text"}
-              size="sm"
-              onClick={() => setCurrentPage(index + 1)}
-            >
-              {index + 1}
-            </IconButton>
-          ))}
-        </div>
+          <div className="flex items-center gap-2">
+          {Array.from({ length: totalPages }, (_, index) => (
+              <IconButton
+                key={index}
+                variant={currentPage === index + 1 ? "outlined" : "text"}
+                size="sm"
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </IconButton>
+            ))}
+          </div>
         <Button variant="outlined" size="sm"onClick={handleNext} disabled={currentPage === totalPages}>
           Next
         </Button>

@@ -27,27 +27,147 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@material-tailwind/react";
-import { getDataRetailer } from "@/services/data-management/retailer";
+import { deleteDataRetailer, getDataRetailer, postDataRetailer, updateDataRetailer } from "@/services/data-management/retailer";
 import { useState, useEffect } from "react";
+import RetailerDialog from "./RetailerDialog";
+import { AlertRetailer } from "./AlertRetailer";
+import DeleteRetailerDialog from "./DeleteRetailerDialog";
+import EditRetailerDialog from "./EditRetailerDialog";
  
 const TABLE_HEAD = ["Name", "Contact", "Address", "Action"];
  
  
 export function RetailerTable() {
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(!open);
-
-  const [openDelete, setOpenDelete] = useState(false);
-  const handleOpenDelete = () => setOpenDelete(!openDelete);
+  // ADD RETAILER
+  const [message, setMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
     
   const [dataList, setData] = useState([]);
-  
-  useEffect(() => {
+
+  const [selectedRetailer, setSelectedRetailer] = useState();
+
+  const ITEMS_PER_PAGE = 5 
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(dataList.length / ITEMS_PER_PAGE);
+
+  const currentData = dataList.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+  const handleInitialData= () => {
+
     getDataRetailer()
-      .then(reponse => setData(reponse))
-      .catch(error => console.error("There was an error!", error));
+    .then(reponse => setData(reponse))
+    .catch(error => console.error("There was an error!", error));
+
+  }
+  useEffect(() => {
+    handleInitialData()
   }, []);
+
+  // ADD RETAILER
+  const [openRetailerDialog, setOpenRetailerDialog] = useState(false);
+  const handleOpenRetailerDialog = () => setOpenRetailerDialog(true);
+
+  const handleCloseRetailerDialog = () => setOpenRetailerDialog(false);
+
+  const handleAdd = async (formData) =>{
+    try {
+      const response = await postDataRetailer(formData);
+      console.log('Data posted successfully:', response);
+
+      setShowAlert(true);
+      setMessage("Berhasil menambahkan Retailer");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseRetailerDialog();
+      handleInitialData();
+      // Tambahkan aksi setelah berhasil mengirim data, seperti mengupdate state atau mengarahkan ke halaman lain
+    } catch (error) {
+      setMessage("Gagal menambahkan Retailer");
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+      console.error('Failed to post data:', error);
+    }
+  }
+
+  // DELETE RETAILER
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const handleOpenDeleteDialog = (retailer) => {
+    setOpenDeleteDialog(true);
+    setSelectedRetailer(retailer);
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  }
+
+  const handleDelete = async (id) => {
+    try {
+    await deleteDataRetailer(id);
+
+    setShowAlert(true);
+    setMessage("Berhasil menghapus Retailer");
+    setTimeout(() => setShowAlert(false), 2000);
+    handleCloseDeleteDialog()
+    handleInitialData();
+    // Perbarui state produk jika diperlukan
+    } catch (error) {
+    setMessage("Gagal menghapus Retailer");
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 2000);
+    }
+  };
+
+  // UPDATE RETAILER
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  
+  const handleOpenEditDialog = (retailer) => {
+    setEditDialogOpen(true);     // Buka dialog
+    setSelectedRetailer(retailer); // Simpan data produk
+  };
+  
+  const handleCloseEditDialog = () => {
+    setSelectedRetailer(null);    // Reset data produk
+    setEditDialogOpen(false);     // Tutup dialog
+  };
+
+  const handleEditSubmit = async (formData) => {
+    try {
+
+      if (!selectedRetailer?.id) {
+        throw new Error("Product ID is not defined");
+      }
+
+      await updateDataRetailer(selectedRetailer.id,formData); // Kirim data ke backend
+          
+      setShowAlert(true);
+      setMessage("Berhasil menyimpan Category");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseEditDialog();
+      handleInitialData();
+      
+    } catch (error) {
+      setShowAlert(true);
+      setMessage("Gagal menyimpan Category");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseEditDialog();
+      }
+    };
 
   return (
 
@@ -74,7 +194,7 @@ export function RetailerTable() {
             </div>
           </div>
 
-          <Button value="product" onClick={handleOpen} className="flex items-center mr-8 gap-3 bg-blue" size="sm">
+          <Button value="product" onClick={handleOpenRetailerDialog} className="flex items-center mr-8 gap-3 bg-blue" size="sm">
             <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Retailer
           </Button>
 
@@ -101,22 +221,13 @@ export function RetailerTable() {
             </tr>
           </thead>
           <tbody>
-            {dataList.map(
-              (
-                {
-                  name,
-                  contact,
-                  address,
-                },
-                index,
-              ) => {
-                const isLast = index === dataList.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
- 
+            {currentData.length > 0 ? (
+                currentData.map((retailer, index) => {
+                const isLast = index === currentData.length - 1;
+                const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+  
                 return (
-                  <tr key={name}>
+                  <tr key={retailer.name}>
                     <td className={classes}>
                       <div className="gap-3">
                         <Typography
@@ -124,7 +235,7 @@ export function RetailerTable() {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {name}
+                          {retailer.name}
                         </Typography>
                       </div>
                     </td>
@@ -134,7 +245,7 @@ export function RetailerTable() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {contact}
+                        {retailer.contact}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -143,188 +254,77 @@ export function RetailerTable() {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {address}
+                        {retailer.address}
                       </Typography>
                     </td>
                     <td className={classes}>
                      <Tooltip content="Edit">
-                        <IconButton variant="text">
+                        <IconButton variant="text" onClick={ () => handleOpenEditDialog(retailer)} >
                             <PencilSquareIcon className="h-4 w-4" />
                         </IconButton>
                      </Tooltip>
                      <Tooltip content="Delete">
-                        <IconButton variant="text" onClick={handleOpenDelete}>
+                        <IconButton variant="text" onClick={ () => handleOpenDeleteDialog(retailer)}>
                             <TrashIcon className="h-4 w-4" color="red" />
                         </IconButton>
                       </Tooltip>
                     </td>
                   </tr>
                 );
-              },
+                })
+            ) : (
+                <tr>
+                <td colSpan="6" className="p-4 text-center text-blue-gray-500">
+                    <Typography variant="h6" color="blue-gray">
+                        No Data Here
+                    </Typography>
+                    <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal leading-none opacity-70 mt-4">
+                        Create your first data
+                    </Typography>
+                </td>
+                </tr>
             )}
           </tbody>
         </table>
       </CardBody>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-        <Button variant="outlined" size="sm">
+        <Button variant="outlined" size="sm" onClick={handlePrevious} disabled={currentPage === 1}>
           Previous
         </Button>
-        <div className="flex items-center gap-2">
-          <IconButton variant="outlined" size="sm">
-            1
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            2
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            3
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            ...
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            8
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            9
-          </IconButton>
-          <IconButton variant="text" size="sm">
-            10
-          </IconButton>
-        </div>
-        <Button variant="outlined" size="sm">
+          <div className="flex items-center gap-2">
+          {Array.from({ length: totalPages }, (_, index) => (
+              <IconButton
+                key={index}
+                variant={currentPage === index + 1 ? "outlined" : "text"}
+                size="sm"
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </IconButton>
+            ))}
+          </div>
+        <Button variant="outlined" size="sm"onClick={handleNext} disabled={currentPage === totalPages}>
           Next
         </Button>
       </CardFooter>
       </Card>
       
-      {/*new supplier*/}
-      <Dialog size="sm" open={open} handler={handleOpen} className="p-4">
-        <DialogHeader className="relative m-0 block">
-          <Typography variant="h4" color="blue-gray">
-            Create New Retailer
-          </Typography>
-          <Typography className="mt-8 font-normal text-orange-600">
-            *Required
-          </Typography>
-        </DialogHeader>
-        <DialogBody className="space-y-4 pb-6">
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Supplier Name
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="input supplier name"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Contact Info
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="input contact info"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Address
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="input address"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-        </DialogBody>
-        <DialogFooter className="flex justify-center">
-          <Button variant="outlined" onClick={handleOpen} >
-            Cancel
-          </Button>
-          <Button className="ml-8 " onClick={handleOpen}>
-            Add Product
-          </Button>
-        </DialogFooter>
-      </Dialog>
+
+      {/* ALERT */ }
+      <AlertRetailer show={showAlert} InputText={message} />
+
+      {/* ADD RETAILER*/}
+      <RetailerDialog open={openRetailerDialog} handleAdd = {handleAdd} handleClose = {handleCloseRetailerDialog}/>
 
       {/* DELETE */}
-      <Dialog size="xs" open={openDelete} handler={handleOpenDelete}>
-        <DialogBody divider className="grid place-items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-16 w-16 text-red-500 mt-4"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <Typography color="red" variant="h4">
-            Retailer Delete
-          </Typography>
-          <Typography className="text-center font-normal">
-            Are you sure to delete?
-          </Typography>
-        </DialogBody>
-        <div className="flex justify-between ">
-            <Typography className="font-normal ml-8 mt-4">
-                Name
-            </Typography>
-            <Typography className="font-normal mr-8 mt-4">
-                ABC KECAP
-            </Typography>
-        </div>
-        <DialogFooter className="flex justify-center">
-          <Button color="red" onClick={handleOpenDelete}>
-            No, Cancel
-          </Button>
-          <Button className="ml-8" variant="outlined" onClick={handleOpenDelete}>
-            Yes, Delete
-          </Button>
-        </DialogFooter>
-      </Dialog>
+      <DeleteRetailerDialog retailer={selectedRetailer} open={openDeleteDialog} handleDelete={handleDelete} handleClose={handleCloseDeleteDialog}/>
+
+      {/* EDIT RETAILER */}
+      <EditRetailerDialog retailer={selectedRetailer} open={editDialogOpen} handleEditSubmit={handleEditSubmit} handleClose={handleCloseEditDialog}/>
+
       
     </>
   );
