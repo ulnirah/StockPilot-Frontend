@@ -38,6 +38,7 @@ import DeleteProductDialog from "./DeleteProductDialog";
 import EditProductDialog from "./EditProductDialog";
 
 import { AlertProduct } from "./AlertProduct";
+import { getDataCategory } from "@/services/data-management/category";
 
 const TABLE_HEAD = ["Product Name", "Description", "Category", "Price", "Stock", "Action"];
  
@@ -71,9 +72,38 @@ function ProductTable() {
   const [selectedProduct, setSelectedProduct] = useState();
   
   const [currentPage, setCurrentPage] = useState(1);
+  
   const totalPages = Math.ceil(dataList.length / ITEMS_PER_PAGE);
 
-  const currentData = dataList.slice(
+  // SEARCH AND FILTER
+
+  const [categoryList, setCategoryList] = useState([]); // Data kategori dari backend
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [category, setCategory] = useState(""); // Untuk kategori
+  const [minPrice, setMinPrice] = useState(""); // Harga minimum
+  const [maxPrice, setMaxPrice] = useState(""); // Harga maksimum
+
+  // Fungsi untuk menangani perubahan input search
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredData = dataList.filter((product) =>{
+
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Filter berdasarkan kategori
+    const matchesCategory = category ? product.category.name === category : true;
+
+    // Filter berdasarkan harga
+    const matchesMinPrice = minPrice ? product.price >= Number(minPrice) : true;
+    const matchesMaxPrice = maxPrice ? product.price <= Number(maxPrice) : true;
+
+    return matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice;
+  });
+
+  const currentData = filteredData.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -90,6 +120,11 @@ function ProductTable() {
     }
   };
 
+  useEffect(() => {
+    getDataCategory()
+      .then(reponse => setCategoryList(reponse))
+      .catch(error => console.error("There was an error!", error));
+  }, []);
   const handleInitialData= () => {
 
     getDataProduct()
@@ -213,8 +248,10 @@ function ProductTable() {
           <div className="flex w-full md:w-max gap-4">
             <div className="w-full md:w-72">
                 <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  label="Search"
+                  icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  onChange={handleSearchChange} 
+                  value={searchQuery} 
                 />
             </div>
             <Button value="filter" onClick={handleOpenFilter} className="flex items-center gap-3 bg-blue" size="sm">
@@ -361,6 +398,8 @@ function ProductTable() {
             <Select
               className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
               placeholder="testing123"
+              value={category}
+              onChange={(e) => setCategory(e)}
               containerProps={{
                 className: "!min-w-full",
               }}
@@ -368,9 +407,13 @@ function ProductTable() {
                 className: "hidden",
               }}
             >
-              <Option>Clothing</Option>
-              <Option>Fashion</Option>
-              <Option>Watches</Option>
+              <Option value="">All</Option>
+              {/* Opsi dari Backend */}
+              {categoryList.map((cat) => (
+                <Option key={cat.id} value={cat.name}>
+                  {cat.name}
+                </Option>
+              ))}
             </Select>
           </div>
           <div>
@@ -386,6 +429,8 @@ function ProductTable() {
               size="lg"
               placeholder="Input minimum price"
               name="name"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
                 className: "!min-w-full",
@@ -393,6 +438,7 @@ function ProductTable() {
               labelProps={{
                 className: "hidden",
               }}
+              
             />
           </div>
           <div>
@@ -401,13 +447,15 @@ function ProductTable() {
               color="blue-gray"
               className="mb-2 text-left font-medium"
             >
-              Minimum Price
+              Maximum Price
             </Typography>
             <Input
               color="gray"
               size="lg"
-              placeholder="Input minimum price"
+              placeholder="Input maximum price"
               name="name"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
               className="placeholder:opacity-100 focus:!border-t-gray-900"
               containerProps={{
                 className: "!min-w-full",
@@ -424,7 +472,7 @@ function ProductTable() {
             Cancel
           </Button>
           <Button className="ml-8 " onClick={handleOpenFilter}>
-            Add Product
+            Apply
           </Button>
         </DialogFooter>
       </Dialog>

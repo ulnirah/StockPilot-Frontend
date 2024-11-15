@@ -52,11 +52,22 @@ export function RetailerTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(dataList.length / ITEMS_PER_PAGE);
 
-  const currentData = dataList.slice(
+  // SEARCH
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Fungsi untuk menangani perubahan input search
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredData = dataList.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const currentData = filteredData.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-
   const handleNext = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
@@ -160,7 +171,7 @@ export function RetailerTable() {
       setTimeout(() => setShowAlert(false), 2000);
       handleCloseEditDialog();
       handleInitialData();
-      
+
     } catch (error) {
       setShowAlert(true);
       setMessage("Gagal menyimpan Category");
@@ -188,8 +199,10 @@ export function RetailerTable() {
           <div className="flex w-full md:w-max gap-4">
             <div className="w-full md:w-72">
                 <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  label="Search"
+                  icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  onChange={handleSearchChange}
+                  value={searchQuery} 
                 />
             </div>
           </div>

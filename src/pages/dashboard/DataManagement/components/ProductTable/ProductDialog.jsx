@@ -175,6 +175,7 @@ function ProductDialog({open, handleClose, handleAdd }){
                   className: "hidden",
                 }}
               >
+
                 {categoryList.map(category => (
                   <Option value={(category.id)} key={category.id}>{category.name}</Option>
                 ))}
