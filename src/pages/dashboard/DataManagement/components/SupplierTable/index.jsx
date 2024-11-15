@@ -78,6 +78,7 @@ export function SupplierTable() {
       setCurrentPage((prev) => prev - 1);
     }
   };
+
   const handleInitialData= () => {
 
     getDataSupplier()
@@ -240,7 +241,7 @@ export function SupplierTable() {
                 const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
  
                 return (
-                  <tr key={supplier.name}>
+                  <tr key={supplier.id}>
                     <td className={classes}>
                       <div className="gap-3">
                         <Typography

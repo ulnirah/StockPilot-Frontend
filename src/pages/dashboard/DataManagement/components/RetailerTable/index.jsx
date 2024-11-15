@@ -50,6 +50,7 @@ export function RetailerTable() {
   const ITEMS_PER_PAGE = 5 
 
   const [currentPage, setCurrentPage] = useState(1);
+  
   const totalPages = Math.ceil(dataList.length / ITEMS_PER_PAGE);
 
   // SEARCH

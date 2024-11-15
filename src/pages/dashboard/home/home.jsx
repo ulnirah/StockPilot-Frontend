@@ -26,7 +26,8 @@ import {
   ordersOverviewData,
 } from "@/data";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
-import StockTable from "./TableStock";
+import HighStockTable from "./TableStock/HighStockTable";
+import LowStockTable from "./TableStock/LowStockTable";
 
 export function Home() {
   return (
@@ -50,8 +51,8 @@ export function Home() {
         ))}
       </div>
       <div className="flex justify-between mb-6 grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
-        <StockTable/>
-        <StockTable/>
+        <HighStockTable/>
+        <LowStockTable/>
       </div>
     </div>
   );

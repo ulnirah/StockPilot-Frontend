@@ -6,6 +6,7 @@ import {
   MagnifyingGlassIcon,
   PencilSquareIcon,
   PlusIcon,
+  DocumentArrowUpIcon,
 } from "@heroicons/react/24/outline";
 
 import { 
@@ -44,7 +45,7 @@ const TABLE_ROWS = [
     deliveryDate: "10-09-2023",
     product: "Food",
     quantity: "15.000",
-    retailerName: "14",
+    retailerName: "agustian",
     status: "Delivered",
   },
   {
@@ -52,7 +53,7 @@ const TABLE_ROWS = [
     deliveryDate: "10-09-2023",
     product: "Food",
     quantity: "15.000",
-    retailerName: "14",
+    retailerName: "agustian",
     status: "Delivered",
   },
 ];
@@ -93,7 +94,7 @@ export function DeliveryTable() {
                   <FunnelIcon strokeWidth={2} className="h-4 w-4" /> Filter
               </Button>
               <Button value="export" className="flex items-center gap-3 bg-blue" size="sm">
-                  <FunnelIcon strokeWidth={2} className="h-4 w-4" /> Export
+                  <DocumentArrowUpIcon strokeWidth={2} className="h-4 w-4" /> Export
               </Button>
             </div>
 

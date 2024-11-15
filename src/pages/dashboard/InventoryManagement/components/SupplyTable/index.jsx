@@ -1,6 +1,7 @@
 import { PencilIcon } from "@heroicons/react/24/solid";
 import {
   ArrowDownTrayIcon,
+  DocumentArrowUpIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
   PlusIcon,
@@ -25,27 +26,103 @@ import {
   Select,
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-
+import { getDataOrder, postDataOrder } from "@/services/inventory/supply";
+import { usePDF } from 'react-to-pdf';
+import OrderDialog from "./OrderDialog";
+import { AlertOrder } from "./AlertOrder";
 const TABLE_HEAD = ["Order Date", "Received Date", "Product", "Quantity", "Supplier", "Status", "Action"];
  
-const TABLE_ROWS = [
-  {
-    orderDate: "10-09-2023",
-    receivedDate: "10-09-2023",
-    product: "Food",
-    quantity: "15",
-    supplier: "14",
-    status: "Completed",
-  },
-];
- 
+const ITEMS_PER_PAGE = 5 
+
 export function SupplyTable() {
+
+  const { toPDF, targetRef } = usePDF({filename: 'Transaction.pdf'});
+
+  // GET ORDER DATA
+  const [message, setMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false); // Untuk kontrol alert
+    
+  const [dataList, setData] = useState([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(dataList.length / ITEMS_PER_PAGE);
+
+  // SEARCH
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Fungsi untuk menangani perubahan input search
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredData = dataList.filter((order) =>
+    order.supplier.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const currentData = filteredData.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
 
   const [openFilter, setOpenFilter] = useState(false);
   const handleOpenFilter = () => setOpenFilter(!openFilter);
+
+  const handleInitialData= () => {
+
+    getDataOrder()
+    .then(reponse => setData(reponse))
+    .catch(error => console.error("There was an error!", error));
+
+  }
+  useEffect(() => {
+    handleInitialData()
+  }, []);
+
+
+  // ADD ORDER
+  const [openOrderDialog, setOpenOrderDialog] = useState(false);
+
+  const handleOpenOrderDialog = () => setOpenOrderDialog(true);
+
+  const handleCloseOrderDialog = () => setOpenOrderDialog(false);
+
+  const handleAdd = async (formData) =>{
+    
+    try {
+      const response = await postDataOrder(formData);
+      console.log('Data posted successfully:', response);
+
+      setShowAlert(true);
+      setMessage("Berhasil menambahkan Order");
+      setTimeout(() => setShowAlert(false), 2000);
+      handleCloseOrderDialog();
+      handleInitialData();
+      // Tambahkan aksi setelah berhasil mengirim data, seperti mengupdate state atau mengarahkan ke halaman lain
+    } catch (error) {
+      setMessage("Gagal menambahkan Order");
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+      console.error('Failed to post data:', error);
+    }
+  }
+
+  // CANCELED
+
+  // RECIEVED
 
   return (
     <>
@@ -67,22 +144,24 @@ export function SupplyTable() {
                   <Input
                   label="Search"
                   icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  onChange={handleSearchChange}
+                  value={searchQuery} 
                   />
               </div>
               <Button value="filter" onClick={handleOpenFilter} className="flex items-center gap-3 bg-blue" size="sm">
                   <FunnelIcon strokeWidth={2} className="h-4 w-4" /> Filter
               </Button>
-              <Button value="export" className="flex items-center gap-3 bg-blue" size="sm">
-                  <FunnelIcon strokeWidth={2} className="h-4 w-4" /> Export
+              <Button value="export" onClick={() => toPDF()} className="flex items-center gap-3 bg-blue" size="sm">
+                  <DocumentArrowUpIcon strokeWidth={2} className="h-4 w-4" /> Export
               </Button>
             </div>
 
-            <Button value="download" onClick={handleOpen} className="flex items-center mr-6 gap-3 bg-blue" size="sm">
+            <Button value="download" onClick={handleOpenOrderDialog} className="flex items-center mr-6 gap-3 bg-blue" size="sm">
               <PlusIcon strokeWidth={2} className="h-4 w-4" /> New Supply
             </Button>
           </div>
         </div>
-        <CardBody className="overflow-scroll px-0">
+        <CardBody className="overflow-scroll px-0" ref={targetRef}>
           <table className="w-full min-w-max table-auto text-center">
             <thead>
               <tr>
@@ -103,25 +182,17 @@ export function SupplyTable() {
               </tr>
             </thead>
             <tbody>
-              {TABLE_ROWS.map(
-                (
-                  {
-                    orderDate,
-                    receivedDate,
-                    product,
-                    quantity,
-                    supplier,
-                    status,
-                  },
-                  index,
-                ) => {
-                  const isLast = index === TABLE_ROWS.length - 1;
-                  const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-blue-gray-50";
-  
+            {currentData.length > 0 ? (
+                currentData.map((order, index) => {
+                const isLast = index === currentData.length - 1;
+                const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+
+                const item = order.items[0]; // Ambil item pertama (jika ada)
+                const productName = item?.product?.name || "N/A"; // Nama produk
+                const quantity = item?.quantity || 0; // Kuantitas produk
+
                   return (
-                    <tr key={name}>
+                    <tr key={order.id}>
                       <td className={classes}>
                         <div className="gap-3">
                           <Typography
@@ -129,7 +200,7 @@ export function SupplyTable() {
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {orderDate}
+                            {new Date(order.createdAt).toLocaleDateString()}
                           </Typography>
                         </div>
                       </td>
@@ -139,7 +210,7 @@ export function SupplyTable() {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {receivedDate}
+                          {new Date(order.updatedAt).toLocaleDateString()} 
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -148,7 +219,7 @@ export function SupplyTable() {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {product}
+                          {productName}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -166,7 +237,7 @@ export function SupplyTable() {
                             color="blue-gray"
                             className="font-normal"
                         >
-                          {supplier}
+                          {order.supplier.name}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -175,7 +246,7 @@ export function SupplyTable() {
                             color="blue-gray"
                             className="font-normal"
                         >
-                          {status}
+                          {order.status}
                         </Typography>
                       </td>
                       <td className={classes}>
@@ -188,283 +259,53 @@ export function SupplyTable() {
                       </td>
                     </tr>
                   );
-                },
+                })
+              ) : (
+                <tr>
+                <td colSpan="6" className="p-4 text-center text-blue-gray-500">
+                    <Typography variant="h6" color="blue-gray">
+                        No Data Here
+                    </Typography>
+                    <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal leading-none opacity-70 mt-4">
+                        Create your first data
+                    </Typography>
+                </td>
+                </tr>
               )}
             </tbody>
           </table>
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          <Button variant="outlined" size="sm">
-            Previous
-          </Button>
+        <Button variant="outlined" size="sm" onClick={handlePrevious} disabled={currentPage === 1}>
+          Previous
+        </Button>
           <div className="flex items-center gap-2">
-            <IconButton variant="outlined" size="sm">
-              1
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              2
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              3
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              ...
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              8
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              9
-            </IconButton>
-            <IconButton variant="text" size="sm">
-              10
-            </IconButton>
+          {Array.from({ length: totalPages }, (_, index) => (
+              <IconButton
+                key={index}
+                variant={currentPage === index + 1 ? "outlined" : "text"}
+                size="sm"
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </IconButton>
+            ))}
           </div>
-          <Button variant="outlined" size="sm">
-            Next
-          </Button>
+        <Button variant="outlined" size="sm"onClick={handleNext} disabled={currentPage === totalPages}>
+          Next
+        </Button>
         </CardFooter>
       </Card>
 
 
-      {/* FILTER */}
-      <Dialog size="xs" open={openFilter} handler={handleOpenFilter} className="p-4">
-        <DialogHeader className="relative m-0 block">
-        </DialogHeader>
-        <DialogBody className="space-y-4 pb-6">
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Category
-            </Typography>
-    
-            <Select
-              className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
-              placeholder="testing123"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            >
-              <Option>Clothing</Option>
-              <Option>Fashion</Option>
-              <Option>Watches</Option>
-            </Select>
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Minimum Price
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="Input minimum price"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Minimum Price
-            </Typography>
-            <Input
-              color="gray"
-              size="lg"
-              placeholder="Input minimum price"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
+      {/* ALERT */ }
+      <AlertOrder show={showAlert} InputText={message} />
 
-        </DialogBody>
-        <DialogFooter className="flex justify-center">
-          <Button variant="outlined" onClick={handleOpenFilter} >
-            Cancel
-          </Button>
-          <Button className="ml-8 " onClick={handleOpenFilter}>
-            Add Delivery
-          </Button>
-        </DialogFooter>
-      </Dialog>
-
-      {/* PRODUCT */ }
-      <Dialog size="xs" open={open} handler={handleOpen} className="p-4">
-        <DialogHeader className="relative m-0 block">
-          <Typography variant="h4" color="blue-gray">
-            Create New Delivery
-          </Typography>
-          <Typography className="mt-8 font-normal text-orange-600">
-            *Required
-          </Typography>
-        </DialogHeader>
-        <DialogBody className="space-y-4 pb-6">
-        <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Product
-            </Typography>
-            <Select
-              className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
-              placeholder="1"
-              labelProps={{
-                className: "hidden",
-              }}
-            >
-              <Option>Clothing</Option>
-              <Option>Fashion</Option>
-              <Option>Watches</Option>
-            </Select>
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Quantity
-            </Typography>
-            <Input
-              color="gray"
-              size="sm"
-              placeholder="input quantity"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Stock
-            </Typography>
-            <Input
-              color="gray"
-              size="sm"
-              placeholder="Auto updated"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-              disabled
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Delivery Date
-            </Typography>
-            <Input
-              color="gray"
-              size="sm"
-              placeholder="input stock"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-              icon={<i className="fas fa-calendar"/>}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Delivery Date
-            </Typography>
-            <Input
-              color="gray"
-              size="sm"
-              placeholder="input stock"
-              name="name"
-              className="placeholder:opacity-100 focus:!border-t-gray-900"
-              containerProps={{
-                className: "!min-w-full",
-              }}
-              labelProps={{
-                className: "hidden",
-              }}
-              icon={<i className="fas fa-calendar"/>}
-            />
-          </div>
-          <div>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="mb-2 text-left font-medium"
-            >
-              Status
-            </Typography>
-            <Select
-              className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
-              placeholder="1"
-              labelProps={{
-                className: "hidden",
-              }}
-            >
-              <Option>Clothing</Option>
-              <Option>Fashion</Option>
-              <Option>Watches</Option>
-            </Select>
-          </div>
-
-        </DialogBody>
-        <DialogFooter className="flex justify-center">
-          <Button variant="outlined" onClick={handleOpen} >
-            Cancel
-          </Button>
-          <Button className="ml-8 " onClick={handleOpen}>
-            Add Delivery
-          </Button>
-        </DialogFooter>
-      </Dialog>
+      {/* ADD ORDER */ }
+      <OrderDialog open={openOrderDialog} handleAdd = {handleAdd} handleClose = {handleCloseOrderDialog}/>
 
     </>
   );
