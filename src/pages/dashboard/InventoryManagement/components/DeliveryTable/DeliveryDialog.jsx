@@ -1,5 +1,5 @@
 import { getDataProduct } from "@/services/data-management/products";
-import { getDataSupplier } from "@/services/data-management/supplier";
+import { getDataRetailer } from "@/services/data-management/retailer";
 import {
     Card,
     CardHeader,
@@ -22,15 +22,19 @@ import {
 
 import { useState, useEffect } from "react";
 
-function OrderDialog({open, handleClose, handleAdd}){
+function DeliveryDialog({open, handleClose, handleAdd}){
 
     const [productList, setProductList] = useState([]);
 
-    const [supplierList, setSupplierList] = useState([]);
+    const [retailerList, setRetailerList] = useState([]);
+
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
   
     const [formData, setFormData] = useState({
-      supplierId: '',
-      items: [{
+      retailerId: '',
+      products: [{
         productId: '',
         quantity: '',
       }],
@@ -40,9 +44,9 @@ function OrderDialog({open, handleClose, handleAdd}){
 
       console.log('handleSelectChangeQuantity', e)
         setFormData({ ...formData,         
-          items: [
+        products: [
           {
-            ...formData.items[0],
+            ...formData.products[0],
             quantity: e.target.value,
           },
           ]
@@ -52,17 +56,17 @@ function OrderDialog({open, handleClose, handleAdd}){
     const handleSelectChangeProduct = (val) => {
       console.log('handleSelectChangeProduct', val)
       setFormData({ ...formData,         
-        items: [
+        products: [
         {
-          ...formData.items[0],
+          ...formData.products[0],
           productId: val,
         },
         ]
      });
     }
 
-    const handleSelectChangeSupplier = (val) => {
-        setFormData({ ...formData, supplierId: val });
+    const handleSelectChangeRetailer = (val) => {
+        setFormData({ ...formData, retailerId: val });
       }
   
     useEffect(() => {
@@ -72,8 +76,8 @@ function OrderDialog({open, handleClose, handleAdd}){
     }, []);
     
     useEffect(() => {
-        getDataSupplier()
-          .then(reponse => setSupplierList(reponse))
+        getDataRetailer()
+          .then(reponse => setRetailerList(reponse))
           .catch(error => console.error("There was an error!", error));
       }, []);
   
@@ -101,7 +105,7 @@ function OrderDialog({open, handleClose, handleAdd}){
                 className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
                 placeholder="1"
                 onChange={handleSelectChangeProduct}
-                value= {formData.items[0].productId}
+                value= {formData.products[0].productId}
                 name="category"
                 labelProps={{
                   className: "hidden",
@@ -143,21 +147,21 @@ function OrderDialog({open, handleClose, handleAdd}){
               color="blue-gray"
               className="mb-2 text-left font-medium"
             >
-              Supplier
+              Retailer
             </Typography>
             <Select
                 className="!w-full !border-[1.5px] !border-blue-gray-200/90 !border-t-blue-gray-200/90 bg-white text-gray-800 ring-4 ring-transparent placeholder:text-gray-600 focus:!border-primary focus:!border-t-blue-gray-900 group-hover:!border-primary"
                 placeholder="1"
-                onChange={handleSelectChangeSupplier}
-                value= {formData.supplierId}
+                onChange={handleSelectChangeRetailer}
+                value= {formData.retailerId}
                 name="category"
                 labelProps={{
                   className: "hidden",
                 }}
               >
 
-                {supplierList.map(supplier => (
-                  <Option value={(supplier.id)} key={supplier.id}>{supplier.name}</Option>
+                {retailerList.map(retailer => (
+                  <Option value={(retailer.id)} key={retailer.id}>{retailer.name}</Option>
                 ))}
             
               </Select>
@@ -169,11 +173,11 @@ function OrderDialog({open, handleClose, handleAdd}){
             Cancel
           </Button>
           <Button className="ml-8 "onClick={() => handleAdd(formData)}>
-            Add Order
+            Add Delivery
           </Button>
         </DialogFooter>
       </Dialog>
     )
 }
 
-export default OrderDialog;
+export default DeliveryDialog;
