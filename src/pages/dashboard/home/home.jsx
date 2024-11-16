@@ -26,7 +26,7 @@ import {
   ordersOverviewData,
 } from "@/data";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
-import HighStockTable from "./TableStock/HighStockTable";
+import HighStockTable from "./TableStock/MostDeliveredTable";
 import LowStockTable from "./TableStock/LowStockTable";
 
 export function Home() {

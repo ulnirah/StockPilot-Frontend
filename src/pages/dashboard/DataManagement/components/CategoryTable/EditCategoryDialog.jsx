@@ -40,7 +40,7 @@ function EditCategoryDialog({category, open, handleEditSubmit, handleClose }){
       <form onSubmit={() => console.log('enter') }>
         <DialogHeader className="relative m-0 block">
           <Typography variant="h4" color="blue-gray">
-            Edit Product
+            Edit Category
           </Typography>
           <Typography className="mt-8 font-normal text-orange-600">
             *Required

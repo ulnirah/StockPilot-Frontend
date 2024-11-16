@@ -119,7 +119,7 @@ function SupplierDialog({open, handleClose, handleAdd }){
             Cancel
           </Button>
           <Button className="ml-8 " onClick={() => handleAdd(formData)}>
-            Add Product
+            Add Supplier
           </Button>
         </DialogFooter>
       </Dialog>
